@@ -14,13 +14,15 @@ export class BreezeScalarPropertyObserver {
 
   subscribe(callback) {
     // lazy create the callbacks array.
-    let callbacks = this.callbacks || [];
+    if (!this.callbacks)
+      this.callbacks = [];
+    let callbacks = this.callbacks;
 
     // push the callback.
     // todo: ask Rob if we need to check whether a callback has already been added.
     callbacks.push(callback);
 
-    // todo: ask Ward about using entityManager.entityChanged to reduce number of subscriptions (if that even matters).
+    // todo: ask Ward about using entityManager.entityChanged to reduce number of subscriptions (if that even matters).  need to consider detached entities.
     if (!this.hasOwnProperty('propertyChangedSubscription')) {
       this.propertyChangedSubscription = this.object.entityAspect.propertyChanged.subscribe(
         function(entity, property, propertyName, oldValue, newValue, parent) {
@@ -54,6 +56,7 @@ export class BreezeBindingAdapter {
     //       on the breeze type each time.  would need a way to scope the dictionary to a particular 
     //       metadatastore instance or resource name...
     // todo: consider support for binding to props on the entityAspect that have events such as "validationErrors".
+    // todo: test whether change events are raised for detached entities.
 
     let entityType = object.entityType;
     return entityType && object.entityAspect && entityType.getProperty(propertyName);
