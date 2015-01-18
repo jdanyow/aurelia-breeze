@@ -1,0 +1,20 @@
+{
+  "name": "aurelia-breeze",
+  "version": "0.1.0",
+  "description": "An Aurelia plugin for binding BreezeJS entities.",
+  "license": "MIT",
+  "keywords": [
+    "aurelia",    
+    "breeze",
+    "binding",
+    "databinding"
+  ],
+  "authors": [
+    "Jeremy Danyow <jdanyow@gmail.com> (https://github.com/jdanyow)"
+  ],
+  "homepage": "https://github.com/jdanyow/aurelia-breeze",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jdanyow/aurelia-breeze"
+  }
+}
