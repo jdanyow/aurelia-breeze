@@ -35,7 +35,8 @@ System.register([], function (_export) {
           },
           subscribe: {
             value: function subscribe(callback) {
-              var callbacks = this.callbacks || [];
+              if (!this.callbacks) this.callbacks = [];
+              var callbacks = this.callbacks;
 
               callbacks.push(callback);
 
