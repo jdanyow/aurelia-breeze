@@ -31,6 +31,7 @@ define(["exports"], function (exports) {
       },
       subscribe: {
         value: function subscribe(callback) {
+          var _this = this;
           if (!this.callbacks) this.callbacks = [];
           var callbacks = this.callbacks;
 
@@ -43,17 +44,12 @@ define(["exports"], function (exports) {
               }
             });
           }
-        },
-        writable: true,
-        enumerable: true,
-        configurable: true
-      },
-      dispose: {
-        value: function dispose() {
-          if (!this.object) return;
 
-          this.object.entityAspect.propertyChanged.unsubscribe(this.propertyChangedSubscription);
-          this.object = null;
+          return function () {
+            callbacks.splice(callbacks.indexof(callback), 1);
+            if (callbacks.length > 0) return;
+            _this.object.entityAspect.propertyChanged.unsubscribe(_this.propertyChangedSubscription);
+          };
         },
         writable: true,
         enumerable: true,

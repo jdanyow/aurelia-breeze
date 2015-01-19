@@ -31,15 +31,14 @@ export class BreezeScalarPropertyObserver {
           }
         });
     }
-  }
 
-  dispose() {
-    // already disposed?
-    if (!this.object)
-      return;
-
-    this.object.entityAspect.propertyChanged.unsubscribe(this.propertyChangedSubscription);
-    this.object = null;
+    return () => {
+      // dispose.
+      callbacks.splice(callbacks.indexof(callback), 1);
+      if (callbacks.length > 0)
+        return;
+      this.object.entityAspect.propertyChanged.unsubscribe(this.propertyChangedSubscription);
+    }
   }
 }
 
