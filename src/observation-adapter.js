@@ -27,14 +27,14 @@ export class BreezeObservationAdapter {
     // todo: test whether change events are raised for detached entities.
 
     var entityType = object.entityType, property;
-    return entityType && object.entityAspect && (property = entityType.getProperty(propertyName)) && property.isScalar;
+    return !!(entityType && object.entityAspect && (property = entityType.getProperty(propertyName)) && property.isScalar);
   }
 
   getObserver(object, propertyName) {
     var observerLookup;
-    if (!handlesProperty(object, propertyName))
+    if (!this.handlesProperty(object, propertyName))
       throw new Error(`BreezeBindingAdapter does not support observing the ${propertyName} property.  Check the handlesProperty method before calling createObserver.`);
-    observerLookup = obj.__breezeObserver__ || createObserverLookup(obj);
+    observerLookup = object.__breezeObserver__ || createObserverLookup(object);
     return observerLookup.getObserver(propertyName);
   }
 }

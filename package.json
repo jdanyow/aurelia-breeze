@@ -24,6 +24,10 @@
     "format": "register",
     "directories": {
       "lib": "dist"
+    },
+    "dependencies": {
+      "aurelia-binding": "^0.3.1",
+      "breeze.js": "github:Breeze/breeze.js@^1.5.2"
     }
   },
   "devDependencies": {

@@ -42,8 +42,8 @@ export class BreezeObjectObserver {
     if(!this.observing){
       this.observing = true;
       this.subscription = this.obj.entityAspect.propertyChanged.subscribe(
-        (entity, property, propertyName, oldValue, newValue, parent) => {
-          this.handleChanges([{name: propertyName, object: entity, type: 'update', oldValue: oldValue}]);
+        args => {
+          this.handleChanges([{name: args.propertyName, object: args.entity, type: 'update', oldValue: args.oldValue}]);
         });
     }
 
@@ -53,7 +53,7 @@ export class BreezeObjectObserver {
         return;
       this.obj.entityAspect.propertyChanged.unsubscribe(this.subscription);
       this.observing = false;
-    };
+    }.bind(this);
   }
 
   getObserver(propertyName){

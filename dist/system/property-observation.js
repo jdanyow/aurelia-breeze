@@ -78,17 +78,17 @@ System.register([], function (_export) {
 
               if (!this.observing) {
                 this.observing = true;
-                this.subscription = this.obj.entityAspect.propertyChanged.subscribe(function (entity, property, propertyName, oldValue, newValue, parent) {
-                  _this.handleChanges([{ name: propertyName, object: entity, type: "update", oldValue: oldValue }]);
+                this.subscription = this.obj.entityAspect.propertyChanged.subscribe(function (args) {
+                  _this.handleChanges([{ name: args.propertyName, object: args.entity, type: "update", oldValue: args.oldValue }]);
                 });
               }
 
-              return function () {
+              return (function () {
                 callbacks.splice(callbacks.indexOf(callback), 1);
                 if (callbacks.length > 0) return;
                 this.obj.entityAspect.propertyChanged.unsubscribe(this.subscription);
                 this.observing = false;
-              };
+              }).bind(this);
             },
             writable: true,
             enumerable: true,

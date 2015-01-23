@@ -40,7 +40,7 @@ System.register(["aurelia-binding", "./property-observation"], function (_export
           handlesProperty: {
             value: function handlesProperty(object, propertyName) {
               var entityType = object.entityType, property;
-              return entityType && object.entityAspect && (property = entityType.getProperty(propertyName)) && property.isScalar;
+              return !!(entityType && object.entityAspect && (property = entityType.getProperty(propertyName)) && property.isScalar);
             },
             writable: true,
             enumerable: true,
@@ -49,8 +49,8 @@ System.register(["aurelia-binding", "./property-observation"], function (_export
           getObserver: {
             value: function getObserver(object, propertyName) {
               var observerLookup;
-              if (!handlesProperty(object, propertyName)) throw new Error("BreezeBindingAdapter does not support observing the " + propertyName + " property.  Check the handlesProperty method before calling createObserver.");
-              observerLookup = obj.__breezeObserver__ || createObserverLookup(obj);
+              if (!this.handlesProperty(object, propertyName)) throw new Error("BreezeBindingAdapter does not support observing the " + propertyName + " property.  Check the handlesProperty method before calling createObserver.");
+              observerLookup = object.__breezeObserver__ || createObserverLookup(object);
               return observerLookup.getObserver(propertyName);
             },
             writable: true,
