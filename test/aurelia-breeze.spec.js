@@ -1,7 +1,10 @@
 import {BreezeObservationAdapter} from '../src/index';
+import Q from 'q';
+import jQuery from 'jquery';
 import breeze from 'breeze.js';
 
 beforeAll(function() {
+  // used to confirm breeze properties are defined as expected.
   if(typeof Object.getPropertyDescriptor !== 'function'){
     Object.getPropertyDescriptor = function (subject, name) {
       var pd = Object.getOwnPropertyDescriptor(subject, name);
@@ -14,8 +17,13 @@ beforeAll(function() {
     };
   }
 
+  // for compatability with jspm.
+  breeze.config.setQ(Q);
+
+  // support backingStore- other modelLibraries are not currently supported.
   breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
 
+  // Create an EntityManager/MetadataStore to be shared with all tests.
   this.dataService = new breeze.DataService({
         serviceName: "https://api.github.com/",
         hasServerMetadata: false 
@@ -55,13 +63,24 @@ beforeAll(function() {
   this.entityManager.metadataStore.addEntityType(this.repositoryType);
   this.entityManager.metadataStore.addEntityType(this.memberType);
 
-  // var query = breeze.EntityQuery.from('orgs/aurelia/members').toType('Member');
-  // entityManager.executeQuery(query)
-  //   .then(queryResult => {
-  //     var members = queryResult.results;
-  //   })
-  //   .fail(reason => {
-  //   });
+  // The following block is here to confirm breeze is working with jspm module loading.
+  // This is not really part of the test suite and will be removed.
+  var query = breeze.EntityQuery.from('orgs/aurelia/members').toType('Member');
+  try
+  {
+    this.entityManager.executeQuery(query)
+      .then(queryResult => {
+        var members = queryResult.results;
+        console.info('Breeze is working with jspm module loading.');
+      })
+      .fail(reason => {
+        console.error('An error occurred executing a Breeze query:  ' + reason.toString());
+      })
+      .done();
+  }
+  catch(e) {
+    console.error('Breeze is not working with jspm module loading:  ' + e.toString());
+  }
 });
 
 beforeEach(function() {
@@ -74,19 +93,26 @@ describe('breeze observation adapter', function() {
     expect(adapter).toBeDefined();
   });  
 
-  it('ignores existing, non breeze scalar properties', function(){
+  it('ignores entity properties that are not observable', function(){
     var adapter = new BreezeObservationAdapter(),
     	entity = this.memberType.createEntity();
     expect(adapter.handlesProperty(entity, 'entityAspect')).toBe(false);
+    expect(adapter.handlesProperty(entity, 'entityType')).toBe(false);
   });
 
-  it('ignores pojo object properties', function(){
+  it('ignores pojo properties', function(){
     var adapter = new BreezeObservationAdapter(),
     	entity = { foo: 'bar' };
     expect(adapter.handlesProperty(entity, 'foo')).toBe(false);
   });
 
-  it('can handle breeze scalar properties', function(){
+  it('ignores undefined properties', function(){
+    var adapter = new BreezeObservationAdapter(),
+      entity = { };
+    expect(adapter.handlesProperty(entity, 'foo')).toBe(false);
+  });
+
+  it('handles breeze scalar properties', function(){
     var adapter = new BreezeObservationAdapter(),
     	entity = this.memberType.createEntity();
     expect(adapter.handlesProperty(entity, 'id')).toBe(true);

@@ -11,6 +11,8 @@ System.config({
   "map": {
     "aurelia-binding": "github:aurelia/binding@0.3.1",
     "breeze.js": "github:Breeze/breeze.js@1.5.2",
+    "jquery": "github:components/jquery@2.1.3",
+    "q": "npm:q@2.0.2",
     "github:Breeze/breeze.js@1.5.2": {
       "Q": "npm:q@2.0.2",
       "jquery": "github:components/jquery@2.1.3"

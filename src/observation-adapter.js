@@ -24,7 +24,7 @@ function createCanObserveLookup(entityType) {
     property = properties[i];
 
     // determine whether the adapter should handle the property...
-    // all combinations of navigation-prop/data-prop * scalar/non-scalar properties are handled EXCEPT
+    // all combinations of navigation/data properties * scalar/non-scalar properties are handled EXCEPT
     // non-scalar navigation properties because Aurelia handles these well natively.
     value[property.name] = property.isDataProperty || property.isScalar;
   }
@@ -50,13 +50,16 @@ export class BreezeObservationAdapter {
     // get or create the lookup used to avoid reflecting on the breeze entityType multiple times.
     canObserve = entityType.__canObserve__ || createCanObserveLookup(entityType);
 
+    // return canObserve- coerce undefined values to false.
     return !!canObserve[propertyName];
   }
 
   getObserver(object, propertyName) {
     var observerLookup;
+
     if (!this.handlesProperty(object, propertyName))
       throw new Error(`BreezeBindingAdapter does not support observing the ${propertyName} property.  Check the handlesProperty method before calling createObserver.`);
+    
     observerLookup = object.__breezeObserver__ || createObserverLookup(object);
     return observerLookup.getObserver(propertyName);
   }
