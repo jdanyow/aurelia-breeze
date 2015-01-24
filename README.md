@@ -19,15 +19,15 @@ This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Au
 
 1. Use jspm to install aurelia-breeze.  This will install the plugin as well as [Breeze](http://www.getbreezenow.com/breezejs) and it's dependencies: [Q](https://github.com/kriskowal/q) and [jQuery](http://jquery.com/).
 
-```shell
-jspm install github:jdanyow/aurelia-breeze
-```
+  ```shell
+  jspm install github:jdanyow/aurelia-breeze
+  ```
 2. Re-install Breeze:
 
-```shell
-jspm install github:Breeze/breeze.js -o "{ directories: { lib: 'build' },  main: 'breeze.min.js' }"
-```
-> Note: Breeze is being added to the jspm registry.  When completed this step will not be needed.
+  ```shell
+  jspm install github:Breeze/breeze.js -o "{ directories: { lib: 'build' },  main: 'breeze.min.js' }"
+  ```
+  > Note: Breeze is being added to the jspm registry.  When completed this step will not be needed.
 
 3. todo:  ....instructions for installing the plugin and using breeze....  
 
