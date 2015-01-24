@@ -2,6 +2,18 @@ import {BreezeObservationAdapter} from '../src/index';
 import breeze from 'breeze.js';
 
 beforeAll(function() {
+  if(typeof Object.getPropertyDescriptor !== 'function'){
+    Object.getPropertyDescriptor = function (subject, name) {
+      var pd = Object.getOwnPropertyDescriptor(subject, name);
+      var proto = Object.getPrototypeOf(subject);
+      while (typeof pd === 'undefined' && proto !== null) {
+        pd = Object.getOwnPropertyDescriptor(proto, name);
+        proto = Object.getPrototypeOf(proto);
+      }
+      return pd;
+    };
+  }
+
   breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
 
   this.dataService = new breeze.DataService({
@@ -11,18 +23,36 @@ beforeAll(function() {
         
   this.entityManager = new breeze.EntityManager({dataService: this.dataService});
 
-  this.memberTypeConfig = {
-      shortName: 'Member',
+  this.repositoryTypeConfig = {
+    shortName: 'Repository',
+    dataProperties: {
+      id: { isPartOfKey: true },
+      memberId: { dataType: breeze.DataType.Int64, isPartOfKey: true },
+      files: { isScalar: false }
+    },
+    navigationProperties: {
+      member: { entityTypeName: 'Member', associationName : 'Member_Repository', foreignKeyNames: ['memberId'], isScalar: true }
+    }
+  };
 
-      dataProperties: {
-        id:          { dataType: breeze.DataType.Int64, isPartOfKey: true },
-        login:       { /* string type by default */ },
-        html_url:    { }
-      }  
-    };
+  this.memberTypeConfig = {
+    shortName: 'Member',
+
+    dataProperties: {
+      id:          { dataType: breeze.DataType.Int64, isPartOfKey: true },
+      login:       { /* string type by default */ },
+      html_url:    { }
+    },
+    navigationProperties: {
+      repositories: { entityTypeName: 'Repository', associationName: 'Member_Repository', foreignKeyNames: ['id'], isScalar: false }
+    }
+  };
+
+  this.repositoryType = new breeze.EntityType(this.repositoryTypeConfig);
 
   this.memberType = new breeze.EntityType(this.memberTypeConfig);
-        
+  
+  this.entityManager.metadataStore.addEntityType(this.repositoryType);
   this.entityManager.metadataStore.addEntityType(this.memberType);
 
   // var query = breeze.EntityQuery.from('orgs/aurelia/members').toType('Member');
@@ -32,6 +62,10 @@ beforeAll(function() {
   //   })
   //   .fail(reason => {
   //   });
+});
+
+beforeEach(function() {
+  this.entityManager.clear();
 });
 
 describe('breeze observation adapter', function() {
@@ -120,5 +154,43 @@ describe('breeze observation adapter', function() {
     change = null;
     entity.login = 'jdanyow';
     expect(change).toBeNull();
+  });
+
+  it('cannot observe non-scalar navigation properties', function(){
+    var adapter = new BreezeObservationAdapter(),
+      member = this.entityManager.createEntity(this.memberType, { id: 1 }),
+      repository = this.entityManager.createEntity(this.repositoryType, { id: 'aurelia/binding', memberId: 1 });
+
+    expect(member.repositories).toBeDefined();
+    expect(member.repositories.constructor).toBe(Array);
+    expect(member.repositories.length).toBe(1);
+    var descriptor = Object.getPropertyDescriptor(member, 'repository');
+    expect(descriptor).toBeUndefined();
+
+    expect(adapter.handlesProperty(member, 'repositories')).toBe(false);
+  });
+
+  it('can observe scalar navigation properties', function(){
+    var adapter = new BreezeObservationAdapter(),
+      member = this.entityManager.createEntity(this.memberType, { id: 1 }),
+      repository = this.entityManager.createEntity(this.repositoryType, { id: 'aurelia/binding', memberId: 1 });
+
+    expect(repository.member).toBeDefined();
+    var descriptor = Object.getPropertyDescriptor(repository, 'member');
+    expect(descriptor).toBeDefined();
+
+    expect(adapter.handlesProperty(repository, 'member')).toBe(true);
+  });
+
+  it('can observe non-scalar data properties', function(){
+    var adapter = new BreezeObservationAdapter(),
+      member = this.entityManager.createEntity(this.memberType, { id: 1 }),
+      repository = this.entityManager.createEntity(this.repositoryType, { id: 'aurelia/binding', memberId: 1, files: ['breeze.js', 'aurelia.js'] });
+
+    expect(repository.files).toBeDefined();
+    var descriptor = Object.getPropertyDescriptor(repository, 'files');
+    expect(descriptor).toBeDefined();
+
+    expect(adapter.handlesProperty(repository, 'files')).toBe(true);
   });
 });
