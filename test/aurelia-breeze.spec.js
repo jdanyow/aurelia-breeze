@@ -1,7 +1,5 @@
 import {BreezeObservationAdapter} from '../src/index';
-import Q from 'q';
-import jQuery from 'jquery';
-import breeze from 'breeze.js';
+import breeze from './breeze-shim';
 
 beforeAll(function() {
   // used to confirm breeze properties are defined as expected.
@@ -16,9 +14,6 @@ beforeAll(function() {
       return pd;
     };
   }
-
-  // for compatability with jspm.
-  breeze.config.setQ(Q);
 
   // support backingStore- other modelLibraries are not currently supported.
   breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
