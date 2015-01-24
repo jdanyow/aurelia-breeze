@@ -25,14 +25,42 @@ define(["exports", "aurelia-binding", "./property-observation"], function (expor
     return value;
   }
 
+  function createCanObserveLookup(entityType) {
+    var value = {},
+        properties = entityType.getProperties(),
+        property,
+        ii = properties.length,
+        i;
+
+    for (i = 0; i < ii; i++) {
+      property = properties[i];
+
+      value[property.name] = property.isDataProperty || property.isScalar;
+    }
+
+    Object.defineProperty(entityType, "__canObserve__", {
+      enumerable: false,
+      configurable: false,
+      writable: false,
+      value: value
+    });
+
+    return value;
+  }
+
   var BreezeObservationAdapter = (function () {
     function BreezeObservationAdapter() {}
 
     _prototypeProperties(BreezeObservationAdapter, null, {
       handlesProperty: {
         value: function handlesProperty(object, propertyName) {
-          var entityType = object.entityType, property;
-          return !!(entityType && object.entityAspect && (property = entityType.getProperty(propertyName)) && property.isScalar);
+          var entityType, canObserve;
+
+          if (!object.entityAspect || !(entityType = object.entityType)) return false;
+
+          canObserve = entityType.__canObserve__ || createCanObserveLookup(entityType);
+
+          return !!canObserve[propertyName];
         },
         writable: true,
         enumerable: true,

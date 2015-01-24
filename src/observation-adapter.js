@@ -17,17 +17,40 @@ function createObserverLookup(obj) {
   return value;
 }
 
+function createCanObserveLookup(entityType) {
+  var value = {}, properties = entityType.getProperties(), property, ii = properties.length, i;
+  
+  for(i = 0; i < ii; i++) {
+    property = properties[i];
+
+    // determine whether the adapter should handle the property...
+    // all combinations of navigation-prop/data-prop * scalar/non-scalar properties are handled EXCEPT
+    // non-scalar navigation properties because Aurelia handles these well natively.
+    value[property.name] = property.isDataProperty || property.isScalar;
+  }
+
+  Object.defineProperty(entityType, "__canObserve__", {
+    enumerable: false,
+    configurable: false,
+    writable: false,
+    value: value
+  });
+
+  return value;
+}
+
 export class BreezeObservationAdapter {
   handlesProperty(object, propertyName) {
-    // probably a hot path...
-    // todo: compare perf of entityType.getProperty vs searching entityType.dataProperties/complexProperties.
-    // todo: consider keeping dictionary-object keyed on entityType.name + propertyName to avoid reflecting 
-    //       on the breeze type each time.  would need a way to scope the dictionary to a particular 
-    //       metadatastore instance or resource name...
-    // todo: test whether change events are raised for detached entities.
+    var entityType, canObserve;
 
-    var entityType = object.entityType, property;
-    return !!(entityType && object.entityAspect && (property = entityType.getProperty(propertyName)) && property.isScalar);
+    // breeze entities have entityAspect and entityType properties.
+    if (!object.entityAspect || !(entityType = object.entityType))
+      return false;
+
+    // get or create the lookup used to avoid reflecting on the breeze entityType multiple times.
+    canObserve = entityType.__canObserve__ || createCanObserveLookup(entityType);
+
+    return !!canObserve[propertyName];
   }
 
   getObserver(object, propertyName) {
