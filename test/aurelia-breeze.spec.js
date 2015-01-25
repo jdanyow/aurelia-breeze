@@ -1,5 +1,5 @@
 import {BreezeObservationAdapter} from '../src/index';
-//import breeze from './breeze-shim';
+import breeze from 'breeze-client';
 
 beforeAll(function() {
   // used to confirm breeze properties are defined as expected.
