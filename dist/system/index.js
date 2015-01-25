@@ -1,6 +1,11 @@
 System.register(["./observation-adapter", "./property-observation"], function (_export) {
   "use strict";
 
+  _export("install", install);
+
+  function install(aurelia) {
+    aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationdapter());
+  }
   return {
     setters: [function (_observationAdapter) {
       _export("install", _observationAdapter.install);
