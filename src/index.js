@@ -1,3 +1,5 @@
+import {ObjectObservationAdapter} from 'aurelia-binding';
+
 export {
   install,
   BreezeObservationAdapter
@@ -9,5 +11,5 @@ export {
 } from './property-observation';
 
 export function install(aurelia) {
-  aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationdapter());
+  aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
 }

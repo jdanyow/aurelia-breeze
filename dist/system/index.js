@@ -1,13 +1,16 @@
-System.register(["./observation-adapter", "./property-observation"], function (_export) {
+System.register(["aurelia-binding", "./observation-adapter", "./property-observation"], function (_export) {
   "use strict";
 
+  var ObjectObservationAdapter;
   _export("install", install);
 
   function install(aurelia) {
-    aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationdapter());
+    aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
   }
   return {
-    setters: [function (_observationAdapter) {
+    setters: [function (_aureliaBinding) {
+      ObjectObservationAdapter = _aureliaBinding.ObjectObservationAdapter;
+    }, function (_observationAdapter) {
       _export("install", _observationAdapter.install);
 
       _export("BreezeObservationAdapter", _observationAdapter.BreezeObservationAdapter);
