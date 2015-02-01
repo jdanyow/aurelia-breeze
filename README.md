@@ -25,7 +25,7 @@ This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Au
 2. Re-install Breeze:
 
   ```shell
-  jspm install github:Breeze/breeze.js -o "{ directories: { lib: 'build' },  main: 'breeze.min.js' }"
+  jspm install npm:breeze-client -o "{ directories: { lib: 'build' }, main: 'breeze.debug.js', format: 'amd', dependencies: { jquery: '^2.1.0', Q: 'npm:q' }, shim: { 'breeze.debug': { deps: ['jquery', 'Q'] } } }"
   ```
   > Note: Breeze is being added to the jspm registry.  When completed this step will not be needed.
 
@@ -85,7 +85,7 @@ To run the unit tests, first ensure that you have followed the steps above in or
 4. Install Breeze using a package override:
 
   ```shell
-  jspm install github:Breeze/breeze.js -o "{ directories: { lib: 'build' },  main: 'breeze.min.js' }"
+  jspm install npm:breeze-client -o "{ directories: { lib: 'build' }, main: 'breeze.debug.js', format: 'amd', dependencies: { jquery: '^2.1.0', Q: 'npm:q' }, shim: { 'breeze.debug': { deps: ['jquery', 'Q'] } } }"
   ```
 > Note: Breeze is being added to the jspm registry.  When completed this step will not be needed.
 
