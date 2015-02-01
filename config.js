@@ -10,50 +10,23 @@ System.config({
 System.config({
   "map": {
     "aurelia-binding": "github:aurelia/binding@0.3.2",
+    "aurelia-http-client": "github:aurelia/http-client@0.4.3",
     "breeze-client": "npm:breeze-client@1.5.4",
-    "jquery": "github:components/jquery@2.1.3",
-    "q": "npm:q@2.0.2",
     "github:aurelia/binding@0.3.2": {
-      "aurelia-metadata": "github:aurelia/metadata@0.3.0",
+      "aurelia-metadata": "github:aurelia/metadata@0.3.1",
       "aurelia-task-queue": "github:aurelia/task-queue@0.2.2"
     },
-    "github:jspm/nodelibs-fs@0.1.0": {
-      "assert": "npm:assert@1.3.0",
-      "fs": "github:jspm/nodelibs-fs@0.1.0"
+    "github:aurelia/http-client@0.4.3": {
+      "aurelia-path": "github:aurelia/path@0.4.2",
+      "core-js": "npm:core-js@0.4.10"
     },
     "github:jspm/nodelibs-process@0.1.0": {
       "process": "npm:process@0.10.0"
     },
-    "github:jspm/nodelibs-util@0.1.0": {
-      "util": "npm:util@0.10.3"
-    },
-    "npm:asap@1.0.0": {
-      "process": "github:jspm/nodelibs-process@0.1.0"
-    },
-    "npm:assert@1.3.0": {
-      "util": "npm:util@0.10.3"
-    },
     "npm:breeze-client@1.5.4": {
-      "Q": "npm:q@2.0.2",
-      "jquery": "npm:jquery@2.1.3"
-    },
-    "npm:collections@2.0.1": {
-      "weak-map": "npm:weak-map@1.0.5"
-    },
-    "npm:inherits@2.0.1": {
-      "util": "github:jspm/nodelibs-util@0.1.0"
-    },
-    "npm:jquery@2.1.3": {
       "process": "github:jspm/nodelibs-process@0.1.0"
     },
-    "npm:q@2.0.2": {
-      "asap": "npm:asap@1.0.0",
-      "collections": "npm:collections@2.0.1",
-      "fs": "github:jspm/nodelibs-fs@0.1.0",
-      "process": "github:jspm/nodelibs-process@0.1.0"
-    },
-    "npm:util@0.10.3": {
-      "inherits": "npm:inherits@2.0.1",
+    "npm:core-js@0.4.10": {
       "process": "github:jspm/nodelibs-process@0.1.0"
     }
   }
