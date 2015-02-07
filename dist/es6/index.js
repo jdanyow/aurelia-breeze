@@ -16,5 +16,5 @@ export function install(aurelia) {
   breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
 
   // make breeze use our ES6 Promise based version of Q.
-  breeze.setQ(Q);
+  breeze.config.setQ(Q);
 }

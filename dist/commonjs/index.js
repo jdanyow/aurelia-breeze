@@ -17,6 +17,6 @@ function install(aurelia) {
   breeze.config.registerAdapter("ajax", AjaxAdapter);
   breeze.config.initializeAdapterInstance("ajax", "aurelia", true);
 
-  breeze.setQ(Q);
+  breeze.config.setQ(Q);
 }
 exports.__esModule = true;

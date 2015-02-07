@@ -18,7 +18,7 @@ define(["exports", "breeze-client", "aurelia-binding", "./observation-adapter", 
     breeze.config.registerAdapter("ajax", AjaxAdapter);
     breeze.config.initializeAdapterInstance("ajax", "aurelia", true);
 
-    breeze.setQ(Q);
+    breeze.config.setQ(Q);
   }
   exports.__esModule = true;
 });
