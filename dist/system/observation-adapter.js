@@ -51,12 +51,9 @@ System.register(["aurelia-binding", "./property-observation"], function (_export
       BreezePropertyObserver = _propertyObservation.BreezePropertyObserver;
     }],
     execute: function () {
-      _prototypeProperties = function (child, staticProps, instanceProps) {
-        if (staticProps) Object.defineProperties(child, staticProps);
-        if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-      };
+      _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-      BreezeObservationAdapter = (function () {
+      BreezeObservationAdapter = _export("BreezeObservationAdapter", (function () {
         function BreezeObservationAdapter() {}
 
         _prototypeProperties(BreezeObservationAdapter, null, {
@@ -71,7 +68,6 @@ System.register(["aurelia-binding", "./property-observation"], function (_export
               return !!canObserve[propertyName];
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           getObserver: {
@@ -84,14 +80,12 @@ System.register(["aurelia-binding", "./property-observation"], function (_export
               return observerLookup.getObserver(propertyName);
             },
             writable: true,
-            enumerable: true,
             configurable: true
           }
         });
 
         return BreezeObservationAdapter;
-      })();
-      _export("BreezeObservationAdapter", BreezeObservationAdapter);
+      })());
     }
   };
 });

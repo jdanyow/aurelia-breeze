@@ -15,22 +15,22 @@ describe('breeze promise adapter', function() {
     jasmine.clock().uninstall();
   });
 
-  it('can defer', function(){
+  it('can defer', () => {
     var deferred = Q.defer();
     expect(deferred instanceof Deferred).toBeTruthy();
     expect(deferred.promise).toBeDefined();
     expect(deferred.resolve).toBeDefined();
-    expect(deferred.reject).toBeDefined();    
+    expect(deferred.reject).toBeDefined();
   });
 
-  it('can resolve deferred', function(){
+  it('can resolve deferred', () => {
     var deferred = Q.defer();
 
     deferred.promise
       .then(resolveCallback, rejectCallback);
     deferred.resolve(data);
 
-    jasmine.clock().tick(100);    
+    jasmine.clock().tick(100);
 
     setTimeout(() => {
       expect(resolveCallback).toHaveBeenCalledWith({});
@@ -38,25 +38,25 @@ describe('breeze promise adapter', function() {
     }, 0);
   });
 
-  it('can reject deferred', function(){
+  it('can reject deferred', () => {
     var deferred = Q.defer();
 
     deferred.promise
       .then(resolveCallback, rejectCallback);
     deferred.reject(data);
 
-    jasmine.clock().tick(100); 
-    
+    jasmine.clock().tick(100);
+
     setTimeout(() => {
       expect(resolveCallback.calls.any()).toBe(false);
       expect(rejectCallback).toHaveBeenCalledWith({});
     }, 0);
   });
 
-  it('can resolve', function(){
+  it('can resolve', () => {
     Q.resolve(data).then(resolveCallback, rejectCallback);
 
-    jasmine.clock().tick(100);    
+    jasmine.clock().tick(100);
 
     setTimeout(() => {
       expect(resolveCallback).toHaveBeenCalledWith({});
@@ -64,11 +64,11 @@ describe('breeze promise adapter', function() {
     }, 0);
   });
 
- it('can reject', function(){
+  it('can reject', () => {
     Q.reject(data).then(resolveCallback, rejectCallback);
 
-    jasmine.clock().tick(100); 
-    
+    jasmine.clock().tick(100);
+
     setTimeout(() => {
       expect(resolveCallback.calls.any()).toBe(false);
       expect(rejectCallback).toHaveBeenCalledWith({});

@@ -5,6 +5,9 @@ import {AjaxAdapter} from './ajax-adapter';
 import {Q} from './promise-adapter';
 
 export function install(aurelia) {
+  // ensure breeze is using the modelLibrary backing store (vs Knockout or Backbone)
+  breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
+
   // provide aurelia with a way to observe breeze properties.
   aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
 

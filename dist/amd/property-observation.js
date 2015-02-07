@@ -1,12 +1,9 @@
 define(["exports"], function (exports) {
   "use strict";
 
-  var _prototypeProperties = function (child, staticProps, instanceProps) {
-    if (staticProps) Object.defineProperties(child, staticProps);
-    if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-  };
+  var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-  var BreezePropertyObserver = (function () {
+  var BreezePropertyObserver = exports.BreezePropertyObserver = (function () {
     function BreezePropertyObserver(owner, obj, propertyName) {
       this.owner = owner;
       this.obj = obj;
@@ -21,7 +18,6 @@ define(["exports"], function (exports) {
           return this.obj[this.propertyName];
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       setValue: {
@@ -29,7 +25,6 @@ define(["exports"], function (exports) {
           this.obj[this.propertyName] = newValue;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       trigger: {
@@ -42,7 +37,6 @@ define(["exports"], function (exports) {
           }
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       subscribe: {
@@ -50,16 +44,13 @@ define(["exports"], function (exports) {
           return this.owner.subscribe(this, callback);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       }
     });
 
     return BreezePropertyObserver;
   })();
-
-  exports.BreezePropertyObserver = BreezePropertyObserver;
-  var BreezeObjectObserver = (function () {
+  var BreezeObjectObserver = exports.BreezeObjectObserver = (function () {
     function BreezeObjectObserver(obj) {
       this.obj = obj;
       this.observers = {};
@@ -87,7 +78,6 @@ define(["exports"], function (exports) {
           }).bind(this);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       getObserver: {
@@ -97,7 +87,6 @@ define(["exports"], function (exports) {
           return propertyObserver;
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       handleChanges: {
@@ -120,13 +109,11 @@ define(["exports"], function (exports) {
           }
         },
         writable: true,
-        enumerable: true,
         configurable: true
       }
     });
 
     return BreezeObjectObserver;
   })();
-
-  exports.BreezeObjectObserver = BreezeObjectObserver;
+  exports.__esModule = true;
 });

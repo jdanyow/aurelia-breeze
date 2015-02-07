@@ -1,10 +1,7 @@
 define(["exports", "aurelia-binding", "./property-observation"], function (exports, _aureliaBinding, _propertyObservation) {
   "use strict";
 
-  var _prototypeProperties = function (child, staticProps, instanceProps) {
-    if (staticProps) Object.defineProperties(child, staticProps);
-    if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-  };
+  var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
   exports.install = install;
   var ObjectObservationAdapter = _aureliaBinding.ObjectObservationAdapter;
@@ -48,7 +45,7 @@ define(["exports", "aurelia-binding", "./property-observation"], function (expor
     return value;
   }
 
-  var BreezeObservationAdapter = (function () {
+  var BreezeObservationAdapter = exports.BreezeObservationAdapter = (function () {
     function BreezeObservationAdapter() {}
 
     _prototypeProperties(BreezeObservationAdapter, null, {
@@ -63,7 +60,6 @@ define(["exports", "aurelia-binding", "./property-observation"], function (expor
           return !!canObserve[propertyName];
         },
         writable: true,
-        enumerable: true,
         configurable: true
       },
       getObserver: {
@@ -76,16 +72,14 @@ define(["exports", "aurelia-binding", "./property-observation"], function (expor
           return observerLookup.getObserver(propertyName);
         },
         writable: true,
-        enumerable: true,
         configurable: true
       }
     });
 
     return BreezeObservationAdapter;
   })();
-
-  exports.BreezeObservationAdapter = BreezeObservationAdapter;
   function install(aurelia) {
     aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
   }
+  exports.__esModule = true;
 });

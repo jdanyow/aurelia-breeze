@@ -1,11 +1,8 @@
 "use strict";
 
-var _prototypeProperties = function (child, staticProps, instanceProps) {
-  if (staticProps) Object.defineProperties(child, staticProps);
-  if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-};
+var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-var BreezePropertyObserver = (function () {
+var BreezePropertyObserver = exports.BreezePropertyObserver = (function () {
   function BreezePropertyObserver(owner, obj, propertyName) {
     this.owner = owner;
     this.obj = obj;
@@ -20,7 +17,6 @@ var BreezePropertyObserver = (function () {
         return this.obj[this.propertyName];
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     setValue: {
@@ -28,7 +24,6 @@ var BreezePropertyObserver = (function () {
         this.obj[this.propertyName] = newValue;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     trigger: {
@@ -41,7 +36,6 @@ var BreezePropertyObserver = (function () {
         }
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     subscribe: {
@@ -49,16 +43,13 @@ var BreezePropertyObserver = (function () {
         return this.owner.subscribe(this, callback);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     }
   });
 
   return BreezePropertyObserver;
 })();
-
-exports.BreezePropertyObserver = BreezePropertyObserver;
-var BreezeObjectObserver = (function () {
+var BreezeObjectObserver = exports.BreezeObjectObserver = (function () {
   function BreezeObjectObserver(obj) {
     this.obj = obj;
     this.observers = {};
@@ -86,7 +77,6 @@ var BreezeObjectObserver = (function () {
         }).bind(this);
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     getObserver: {
@@ -96,7 +86,6 @@ var BreezeObjectObserver = (function () {
         return propertyObserver;
       },
       writable: true,
-      enumerable: true,
       configurable: true
     },
     handleChanges: {
@@ -119,12 +108,10 @@ var BreezeObjectObserver = (function () {
         }
       },
       writable: true,
-      enumerable: true,
       configurable: true
     }
   });
 
   return BreezeObjectObserver;
 })();
-
-exports.BreezeObjectObserver = BreezeObjectObserver;
+exports.__esModule = true;

@@ -31,7 +31,7 @@
       "breeze-client": "npm:breeze-client@^1.5.4"
     }
   },
-  "devDependencies": {    
+  "devDependencies": {
     "conventional-changelog": "0.0.11",
     "del": "^1.1.0",
     "gulp": "^3.8.10",

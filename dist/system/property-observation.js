@@ -5,12 +5,9 @@ System.register([], function (_export) {
   return {
     setters: [],
     execute: function () {
-      _prototypeProperties = function (child, staticProps, instanceProps) {
-        if (staticProps) Object.defineProperties(child, staticProps);
-        if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
-      };
+      _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-      BreezePropertyObserver = (function () {
+      BreezePropertyObserver = _export("BreezePropertyObserver", (function () {
         function BreezePropertyObserver(owner, obj, propertyName) {
           this.owner = owner;
           this.obj = obj;
@@ -25,7 +22,6 @@ System.register([], function (_export) {
               return this.obj[this.propertyName];
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           setValue: {
@@ -33,7 +29,6 @@ System.register([], function (_export) {
               this.obj[this.propertyName] = newValue;
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           trigger: {
@@ -46,7 +41,6 @@ System.register([], function (_export) {
               }
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           subscribe: {
@@ -54,16 +48,13 @@ System.register([], function (_export) {
               return this.owner.subscribe(this, callback);
             },
             writable: true,
-            enumerable: true,
             configurable: true
           }
         });
 
         return BreezePropertyObserver;
-      })();
-      _export("BreezePropertyObserver", BreezePropertyObserver);
-
-      BreezeObjectObserver = (function () {
+      })());
+      BreezeObjectObserver = _export("BreezeObjectObserver", (function () {
         function BreezeObjectObserver(obj) {
           this.obj = obj;
           this.observers = {};
@@ -91,7 +82,6 @@ System.register([], function (_export) {
               }).bind(this);
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           getObserver: {
@@ -101,7 +91,6 @@ System.register([], function (_export) {
               return propertyObserver;
             },
             writable: true,
-            enumerable: true,
             configurable: true
           },
           handleChanges: {
@@ -124,14 +113,12 @@ System.register([], function (_export) {
               }
             },
             writable: true,
-            enumerable: true,
             configurable: true
           }
         });
 
         return BreezeObjectObserver;
-      })();
-      _export("BreezeObjectObserver", BreezeObjectObserver);
+      })());
     }
   };
 });

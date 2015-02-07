@@ -1,23 +1,30 @@
-System.register(["aurelia-binding", "./observation-adapter", "./property-observation"], function (_export) {
+System.register(["breeze-client", "aurelia-binding", "./observation-adapter", "./ajax-adapter", "./promise-adapter"], function (_export) {
   "use strict";
 
-  var ObjectObservationAdapter;
+  var breeze, ObjectObservationAdapter, BreezeObservationAdapter, AjaxAdapter, Q;
   _export("install", install);
 
   function install(aurelia) {
+    breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
+
     aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
+
+    breeze.config.registerAdapter("ajax", AjaxAdapter);
+    breeze.config.initializeAdapterInstance("ajax", "aurelia", true);
+
+    breeze.setQ(Q);
   }
   return {
-    setters: [function (_aureliaBinding) {
+    setters: [function (_breezeClient) {
+      breeze = _breezeClient["default"];
+    }, function (_aureliaBinding) {
       ObjectObservationAdapter = _aureliaBinding.ObjectObservationAdapter;
     }, function (_observationAdapter) {
-      _export("install", _observationAdapter.install);
-
-      _export("BreezeObservationAdapter", _observationAdapter.BreezeObservationAdapter);
-    }, function (_propertyObservation) {
-      _export("BreezeObjectObserver", _propertyObservation.BreezeObjectObserver);
-
-      _export("BreezePropertyObserver", _propertyObservation.BreezePropertyObserver);
+      BreezeObservationAdapter = _observationAdapter.BreezeObservationAdapter;
+    }, function (_ajaxAdapter) {
+      AjaxAdapter = _ajaxAdapter.AjaxAdapter;
+    }, function (_promiseAdapter) {
+      Q = _promiseAdapter.Q;
     }],
     execute: function () {}
   };
