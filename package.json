@@ -26,8 +26,8 @@
       "lib": "dist"
     },
     "dependencies": {
-      "aurelia-binding": "^0.3.2",
-      "aurelia-http-client": "^0.4.3",
+      "aurelia-binding": "^0.3.4",
+      "aurelia-http-client": "^0.4.4",
       "breeze-client": "npm:breeze-client@^1.5.4"
     }
   },
