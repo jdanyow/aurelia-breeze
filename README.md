@@ -1,6 +1,15 @@
 # aurelia-breeze
 
-This library is a plugin for the [Aurelia](http://www.aurelia.io/) framework that provides an adapter for observing [Breeze](http://www.getbreezenow.com/breezejs) entities.
+This library is a plugin for the [Aurelia](http://www.aurelia.io/) framework.  It's goal is to make using [Breeze](http://www.getbreezenow.com/breezejs) with Aurelia as seamless as possible.
+
+What's included:
+
+1. An adapter for observing Breeze entities.
+2. A Breeze [ajax adapter](http://www.getbreezenow.com/documentation/controlling-ajax) that uses Aurelia's [http-client](https://github.com/aurelia/http-client).
+3. A [light-weight substitute](https://github.com/jdanyow/aurelia-breeze/blob/master/src/promise-adapter.js) for Breeze's dependency on [Q](https://github.com/kriskowal/q) that uses [ES6 promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+
+
+## FAQ
 
 **Why does Aurelia need an adapter to observe Breeze entities?**
 
@@ -8,32 +17,41 @@ Breeze entity properties have defined getters and setters created using Object.d
 
 **Which model libraries are supported with this plugin?**
 
-Breeze can create entities using a variety of model binding libraries such as [Knockout](http://knockoutjs.com/) and [Backbone](http://backbonejs.org/) which provide great data-binding support for legacy browsers.  Chances are if you're using Aurelia, legacy browser support is not a concern.  The aurelia-breeze plugin only supports Breeze's native model library: "backingStore".  To use "backingStore" make sure you include this line of code in your project:
+Breeze can create entities using a variety of model binding libraries such as [Knockout](http://knockoutjs.com/) and [Backbone](http://backbonejs.org/) which provide great data-binding support for legacy browsers.  Chances are if you're using Aurelia, legacy browser support is not a concern.  The aurelia-breeze plugin only supports Breeze's native model library: "backingStore".  Upon installation this plugin will make "backingStore" the default model library:
 ```javascript
 breeze.config.initializeAdapterInstance("modelLibrary", "backingStore", true);
 ```
 
+**Do I need jQuery?**
+
+No.  Breeze doesn't force you to use a particular ajax implementation.  By default it uses jQuery however it can be configured to use Angular's $http or even a custom ajax adapter.  This is where we come in... this plugin provides Breeze with an ajax implementation that uses Aurelia's http-client.
+
+**Do I need Q?**
+
+No.  Normally Breeze depends on [Q](https://github.com/kriskowal/q) for it's Promise implementation.  Since you're using Aurelia which depends upon [ES6 promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) we can assume a Promise implementation is already defined.  This means we can give Breeze [an object](https://github.com/jdanyow/aurelia-breeze/blob/master/src/promise-adapter.js) that has a Q style API but uses ES6 Promises behind the scenes.
+
 ## Using The Adapter
 
-This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Aurelia project according to the guide [here](http://aurelia.io/review/get-started.html).
+This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Aurelia project according to the guide [here](http://aurelia.io/get-started.html).
 
-1. Use jspm to install aurelia-breeze.  This will install the plugin as well as [Breeze](http://www.getbreezenow.com/breezejs) and it's dependencies: [Q](https://github.com/kriskowal/q) and [jQuery](http://jquery.com/).
+1. Use jspm to install aurelia-breeze.
 
   ```shell
   jspm install github:jdanyow/aurelia-breeze
   ```
-2. Re-install Breeze:
+2. Install Breeze:
 
   ```shell
-  jspm install npm:breeze-client -o "{ directories: { lib: 'build' }, main: 'breeze.debug.js', format: 'amd', dependencies: { jquery: '^2.1.0', Q: 'npm:q' }, shim: { 'breeze.debug': { deps: ['jquery', 'Q'] } } }"
+  jspm install breeze
   ```
-  > Note: Breeze is being added to the jspm registry.  When completed this step will not be needed.
-
 3. todo:  ....instructions for installing the plugin and using breeze....  
 
 ## Dependencies
 
 * [aurelia-binding](https://github.com/aurelia/binding)
+* [aurelia-dependency-injection](https://github.com/aurelia/dependency-injection)
+* [aurelia-http-client](https://github.com/aurelia/http-client)
+* [breeze](http://www.getbreezenow.com/breezejs)
 
 ## Platform Support
 
@@ -82,14 +100,7 @@ To run the unit tests, first ensure that you have followed the steps above in or
   ```shell
   jspm install
   ```
-4. Install Breeze using a package override:
-
-  ```shell
-  jspm install npm:breeze-client -o "{ directories: { lib: 'build' }, main: 'breeze.debug.js', format: 'amd', dependencies: { jquery: '^2.1.0', Q: 'npm:q' }, shim: { 'breeze.debug': { deps: ['jquery', 'Q'] } } }"
-  ```
-> Note: Breeze is being added to the jspm registry.  When completed this step will not be needed.
-
-5. You can now run the tests with this command:
+4. You can now run the tests with this command:
 
   ```shell
   karma start
