@@ -1,4 +1,4 @@
-import breeze from 'breeze-client';
+import breeze from 'breeze';
 import {ObjectObservationAdapter} from 'aurelia-binding';
 import {BreezeObservationAdapter} from './observation-adapter';
 import {AjaxAdapter} from './ajax-adapter';

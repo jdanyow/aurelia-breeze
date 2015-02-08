@@ -1,10 +1,10 @@
-define(["exports", "breeze-client", "aurelia-binding", "./observation-adapter", "./ajax-adapter", "./promise-adapter"], function (exports, _breezeClient, _aureliaBinding, _observationAdapter, _ajaxAdapter, _promiseAdapter) {
+define(["exports", "breeze", "aurelia-binding", "./observation-adapter", "./ajax-adapter", "./promise-adapter"], function (exports, _breeze, _aureliaBinding, _observationAdapter, _ajaxAdapter, _promiseAdapter) {
   "use strict";
 
   var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
   exports.install = install;
-  var breeze = _interopRequire(_breezeClient);
+  var breeze = _interopRequire(_breeze);
 
   var ObjectObservationAdapter = _aureliaBinding.ObjectObservationAdapter;
   var BreezeObservationAdapter = _observationAdapter.BreezeObservationAdapter;

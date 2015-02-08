@@ -3,7 +3,7 @@
 var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
 
 exports.install = install;
-var breeze = _interopRequire(require("breeze-client"));
+var breeze = _interopRequire(require("breeze"));
 
 var ObjectObservationAdapter = require("aurelia-binding").ObjectObservationAdapter;
 var BreezeObservationAdapter = require("./observation-adapter").BreezeObservationAdapter;

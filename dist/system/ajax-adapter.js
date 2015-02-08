@@ -1,4 +1,4 @@
-System.register(["aurelia-http-client", "breeze-client"], function (_export) {
+System.register(["aurelia-http-client", "breeze"], function (_export) {
   "use strict";
 
   var HttpClient, Headers, breeze, _prototypeProperties, AjaxAdapter, HttpResponse;
@@ -21,8 +21,8 @@ System.register(["aurelia-http-client", "breeze-client"], function (_export) {
     setters: [function (_aureliaHttpClient) {
       HttpClient = _aureliaHttpClient.HttpClient;
       Headers = _aureliaHttpClient.Headers;
-    }, function (_breezeClient) {
-      breeze = _breezeClient["default"];
+    }, function (_breeze) {
+      breeze = _breeze["default"];
     }],
     execute: function () {
       _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };

@@ -11,7 +11,7 @@ System.config({
   "map": {
     "aurelia-binding": "github:aurelia/binding@0.3.4",
     "aurelia-http-client": "github:aurelia/http-client@0.4.4",
-    "breeze-client": "npm:breeze-client@1.5.4",
+    "breeze": "npm:breeze-client@1.5.4",
     "github:aurelia/binding@0.3.4": {
       "aurelia-dependency-injection": "github:aurelia/dependency-injection@0.4.2",
       "aurelia-metadata": "github:aurelia/metadata@0.3.1",

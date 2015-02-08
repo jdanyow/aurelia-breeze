@@ -1,4 +1,4 @@
-System.register(["breeze-client", "aurelia-binding", "./observation-adapter", "./ajax-adapter", "./promise-adapter"], function (_export) {
+System.register(["breeze", "aurelia-binding", "./observation-adapter", "./ajax-adapter", "./promise-adapter"], function (_export) {
   "use strict";
 
   var breeze, ObjectObservationAdapter, BreezeObservationAdapter, AjaxAdapter, Q;
@@ -15,8 +15,8 @@ System.register(["breeze-client", "aurelia-binding", "./observation-adapter", ".
     breeze.config.setQ(Q);
   }
   return {
-    setters: [function (_breezeClient) {
-      breeze = _breezeClient["default"];
+    setters: [function (_breeze) {
+      breeze = _breeze["default"];
     }, function (_aureliaBinding) {
       ObjectObservationAdapter = _aureliaBinding.ObjectObservationAdapter;
     }, function (_observationAdapter) {

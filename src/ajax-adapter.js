@@ -1,5 +1,5 @@
 import {HttpClient, Headers} from 'aurelia-http-client';
-import breeze from 'breeze-client';
+import breeze from 'breeze';
 
 export class AjaxAdapter {
   constructor() {

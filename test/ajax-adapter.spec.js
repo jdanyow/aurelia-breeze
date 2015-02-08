@@ -1,5 +1,5 @@
 import {AjaxAdapter} from '../src/ajax-adapter';
-import breeze from 'breeze-client';
+import breeze from 'breeze';
 import initMetadata from './metadata';
 
 describe('ajax adapter', function() {

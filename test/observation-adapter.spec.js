@@ -1,5 +1,5 @@
 import {BreezeObservationAdapter} from '../src/observation-adapter';
-import breeze from 'breeze-client';
+import breeze from 'breeze';
 import initMetadata from './metadata';
 
 describe('breeze observation adapter', function() {

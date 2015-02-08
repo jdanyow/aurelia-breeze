@@ -8,7 +8,7 @@ var _aureliaHttpClient = require("aurelia-http-client");
 
 var HttpClient = _aureliaHttpClient.HttpClient;
 var Headers = _aureliaHttpClient.Headers;
-var breeze = _interopRequire(require("breeze-client"));
+var breeze = _interopRequire(require("breeze"));
 
 var AjaxAdapter = exports.AjaxAdapter = (function () {
   function AjaxAdapter() {

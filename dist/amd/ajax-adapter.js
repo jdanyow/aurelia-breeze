@@ -1,4 +1,4 @@
-define(["exports", "aurelia-http-client", "breeze-client"], function (exports, _aureliaHttpClient, _breezeClient) {
+define(["exports", "aurelia-http-client", "breeze"], function (exports, _aureliaHttpClient, _breeze) {
   "use strict";
 
   var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
@@ -7,7 +7,7 @@ define(["exports", "aurelia-http-client", "breeze-client"], function (exports, _
 
   var HttpClient = _aureliaHttpClient.HttpClient;
   var Headers = _aureliaHttpClient.Headers;
-  var breeze = _interopRequire(_breezeClient);
+  var breeze = _interopRequire(_breeze);
 
   var AjaxAdapter = exports.AjaxAdapter = (function () {
     function AjaxAdapter() {
