@@ -161,4 +161,36 @@ describe('ajax adapter', function() {
       status: 200
     });
   });
+
+  it('handles null responseText', () => {
+    var config = {
+        type: 'GET',
+        url: 'https://foo.com/bars',
+        dataType: 'json',
+        success: httpResponse => {
+          expect(httpResponse.data).toBe(null);
+        },
+        error: httpResponse => {}
+      },
+      request;
+
+    spyOn(config, 'success').and.callThrough();
+    spyOn(config, 'error').and.callThrough();
+
+    adapter.ajax(config);
+
+    request = jasmine.Ajax.requests.mostRecent();
+
+    request.respondWith({
+      status: 200,
+      responseText: 'null'
+    });
+
+    jasmine.clock().tick(100);
+
+    setTimeout(() => {
+      expect(config.success).toHaveBeenCalled();
+      expect(config.error.calls.any()).toBe(false);
+    }, 0);
+  });
 });
