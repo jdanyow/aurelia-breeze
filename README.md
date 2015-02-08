@@ -58,7 +58,7 @@ This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Au
     aurelia.start().then(a => a.setRoot('app', document.body));
   }
   ```
-4. Now you're ready to use breeze:
+4. Now you're ready to use Breeze in your Aurelia application:
 
   ```javascript
   import breeze from 'breeze';
