@@ -44,8 +44,29 @@ This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Au
   ```shell
   jspm install breeze
   ```
-3. todo:  ....instructions for installing the plugin and using breeze....  
+3. Use the plugin in your app's main.js:
 
+  ```javascript
+  export function configure(aurelia) {
+    aurelia.use
+      .defaultBindingLanguage()
+      .defaultResources()
+      .router()
+      .eventAggregator()
+      .plugin('aurelia-breeze');  // <--------<<
+
+    aurelia.start().then(a => a.setRoot('app', document.body));
+  }
+  ```
+4. Now you're ready to use breeze:
+
+  ```javascript
+  import breeze from 'breeze';
+  
+  var query = new breeze.EntityQuery();
+  ...
+  ```
+  
 ## Dependencies
 
 * [aurelia-binding](https://github.com/aurelia/binding)
