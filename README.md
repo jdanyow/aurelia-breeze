@@ -37,7 +37,7 @@ This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Au
 1. Use jspm to install aurelia-breeze.
 
   ```shell
-  jspm install github:jdanyow/aurelia-breeze
+  jspm install aurelia-breeze
   ```
 2. Install Breeze:
 
