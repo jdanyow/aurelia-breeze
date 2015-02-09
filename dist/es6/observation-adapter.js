@@ -1,4 +1,3 @@
-import {ObjectObservationAdapter} from 'aurelia-binding';
 import {
   BreezeObjectObserver, 
   BreezePropertyObserver, 
@@ -63,8 +62,4 @@ export class BreezeObservationAdapter {
     observerLookup = object.__breezeObserver__ || createObserverLookup(object);
     return observerLookup.getObserver(propertyName);
   }
-}
-
-export function install(aurelia) {
-  aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
 }

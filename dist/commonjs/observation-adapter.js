@@ -2,8 +2,6 @@
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-exports.install = install;
-var ObjectObservationAdapter = require("aurelia-binding").ObjectObservationAdapter;
 var _propertyObservation = require("./property-observation");
 
 var BreezeObjectObserver = _propertyObservation.BreezeObjectObserver;
@@ -79,7 +77,4 @@ var BreezeObservationAdapter = exports.BreezeObservationAdapter = (function () {
 
   return BreezeObservationAdapter;
 })();
-function install(aurelia) {
-  aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
-}
 exports.__esModule = true;

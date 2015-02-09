@@ -1,4 +1,4 @@
-# ![aurelia-breeze](aurelia-breeze2.png)
+# ![aurelia-breeze](aurelia-breeze.png)
 
 This library is a plugin for the [Aurelia](http://www.aurelia.io/) framework.  It's goal is to make using [Breeze](http://www.getbreezenow.com/breezejs) with Aurelia as seamless as possible.
 

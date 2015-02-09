@@ -1,10 +1,8 @@
-define(["exports", "aurelia-binding", "./property-observation"], function (exports, _aureliaBinding, _propertyObservation) {
+define(["exports", "./property-observation"], function (exports, _propertyObservation) {
   "use strict";
 
   var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
-  exports.install = install;
-  var ObjectObservationAdapter = _aureliaBinding.ObjectObservationAdapter;
   var BreezeObjectObserver = _propertyObservation.BreezeObjectObserver;
   var BreezePropertyObserver = _propertyObservation.BreezePropertyObserver;
 
@@ -78,8 +76,5 @@ define(["exports", "aurelia-binding", "./property-observation"], function (expor
 
     return BreezeObservationAdapter;
   })();
-  function install(aurelia) {
-    aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
-  }
   exports.__esModule = true;
 });
