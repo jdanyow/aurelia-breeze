@@ -1,4 +1,5 @@
-import {AjaxAdapter} from '../src/ajax-adapter';
+import {HttpClient} from 'aurelia-http-client';
+import {AjaxAdapter, setHttpClientFactory} from '../src/ajax-adapter';
 import breeze from 'breeze';
 import initMetadata from './metadata';
 
@@ -6,6 +7,7 @@ describe('ajax adapter', function() {
   var adapter;
 
   beforeAll(() => {
+    setHttpClientFactory(() => new HttpClient());
     initMetadata(this);
   });
 
@@ -15,12 +17,10 @@ describe('ajax adapter', function() {
       Authorization: 'bearer token'
     };
     adapter.initialize();
-    jasmine.clock().install();
     jasmine.Ajax.install();
   });
 
   afterEach(() => {
-    jasmine.clock().uninstall();
     jasmine.Ajax.uninstall();
   });
 
@@ -29,7 +29,7 @@ describe('ajax adapter', function() {
     adapter.initialize();
   });
 
-  it('can GET', () => {
+  it('can GET', (done) => {
     var responseData = JSON.stringify({ donald: 'draper' }),
       url = 'https://foo.com/bars',
       contentType = 'application/json',
@@ -73,15 +73,14 @@ describe('ajax adapter', function() {
       }
     });
 
-    jasmine.clock().tick(100);
-
     setTimeout(() => {
       expect(config.success).toHaveBeenCalled();
       expect(config.error.calls.any()).toBe(false);
+      done();
     }, 0);
   });
 
-  it('can POST', () => {
+  it('can POST', (done) => {
     var requestData = JSON.stringify({ don: 'draper' }),
       responseData = JSON.stringify({ roger: 'sterling' }),
       url = 'https://foo.com/SaveChanges',
@@ -125,11 +124,10 @@ describe('ajax adapter', function() {
       }
     });
 
-    jasmine.clock().tick(100);
-
     setTimeout(() => {
       expect(config.success).toHaveBeenCalled();
       expect(config.error.calls.any()).toBe(false);
+      done();
     }, 0);
   });
 
@@ -145,7 +143,7 @@ describe('ajax adapter', function() {
 
     adapter.requestInterceptor =
       requestInfo => {
-        requestInfo.config.headers.add('intercepted', 'true');
+        requestInfo.config.headers['intercepted'] = 'true';
       };
 
     spyOn(adapter, 'requestInterceptor').and.callThrough();
@@ -162,7 +160,7 @@ describe('ajax adapter', function() {
     });
   });
 
-  it('handles null responseText', () => {
+  it('handles null responseText', (done) => {
     var config = {
         type: 'GET',
         url: 'https://foo.com/bars',
@@ -186,11 +184,10 @@ describe('ajax adapter', function() {
       responseText: 'null'
     });
 
-    jasmine.clock().tick(100);
-
     setTimeout(() => {
       expect(config.success).toHaveBeenCalled();
       expect(config.error.calls.any()).toBe(false);
+      done();
     }, 0);
   });
 });

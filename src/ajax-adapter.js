@@ -1,5 +1,10 @@
-import {HttpClient, Headers} from 'aurelia-http-client';
 import breeze from 'breeze';
+
+var createHttpClient;
+
+export function setHttpClientFactory(createClient) {
+  createHttpClient = createClient;
+}
 
 export class AjaxAdapter {
   constructor() {
@@ -8,35 +13,27 @@ export class AjaxAdapter {
     this.requestInterceptor = null;
   }
 
+  get httpClient() {
+    return this.client || (this.client = createHttpClient());
+  }
+
   initialize() {}
 
   ajax(config) {
-    var method, headers, client, queryString, requestInfo;
-
-    // create the Aurelia Headers instance.
-    headers = new Headers(this.defaultHeaders || {});
-    if (config.contentType)
-      headers.add('Content-Type', config.contentType);
+    var requestInfo, header, method;
 
     // build the request info object.
     requestInfo = {
       adapter: this,
-      config: {
-        type: config.type,
-        url: config.url,
-        headers: headers,
-        params: config.params,
-        contentType: config.contentType, //   only supplied when type is 'post'
-        data: config.data, //                 only supplied when type is 'post'
-        dataType: config.dataType, //         'json' or 'jsonp'.  when 'jsonp', crossDomain is true.
-        crossDomain: config.crossDomain //    true when dataType is 'jsonp'
-      },
+      config: clone(config),
       zConfig: config,
       success: config.success,
       error: config.error
     };
+    requestInfo.config.request = this.httpClient.request;
+    requestInfo.config.headers = clone(this.defaultHeaders || {});
 
-    // submit the request info to interception.
+    // submit the request-info for interception.
     if (breeze.core.isFunction(this.requestInterceptor)) {
       this.requestInterceptor(requestInfo);
       if (this.requestInterceptor.oneTime) {
@@ -44,20 +41,24 @@ export class AjaxAdapter {
       }
       if (!requestInfo.config)
         return;
-      // use the intercepted config.
-      config = requestInfo.config;
+    }
+    config = requestInfo.config;
+
+    // configure the request.
+    config.request.withParams(config.params);
+    if (config.contentType)
+      config.request.withHeader('Content-Type', config.contentType);
+    for(var header in config.headers) {
+      if(config.headers.hasOwnProperty(header)) {
+        config.request.withHeader(header, config.headers[header]);
+      }
     }
 
-    // determine which method on the Aurelia HttpClient to use.
+    // determine which request method to use.
     method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
 
-    // create the query string.
-    // todo: refactor once https://github.com/aurelia/http-client/issues/4 is implemented.
-    queryString = getQueryString(config.params);
-
     // send the request.
-    client = new HttpClient(undefined, headers);
-    client[method](config.url + queryString, config.data)
+    config.request[method](config.url, config.data)
       .then(
         r => requestInfo.success(new HttpResponse(r, requestInfo.zConfig)),
         r => requestInfo.error(new HttpResponse(r, requestInfo.zConfig))
@@ -80,19 +81,16 @@ export class HttpResponse {
   }
 }
 
-function getQueryString(params) {
-  var q = '';
-  if (params)
-    q = param(params);
-  if (q.length)
-    q = '?' + q;
-  return q;
-}
+function clone(obj) {
+  if(obj == null || typeof(obj) != 'object')
+    return obj;
 
-function param(map) {
-  var r20 = /%20/g;
-  return Object.keys(map)
-    .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(map[key]))
-    .join('&')
-    .replace(r20, "+");
+  var temp = obj.constructor();
+
+  for(var key in obj) {
+    if(obj.hasOwnProperty(key)) {
+      temp[key] = clone(obj[key]);
+    }
+  }
+  return temp;
 }

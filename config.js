@@ -10,7 +10,7 @@ System.config({
 System.config({
   "map": {
     "aurelia-binding": "github:aurelia/binding@0.3.4",
-    "aurelia-http-client": "github:aurelia/http-client@0.4.4",
+    "aurelia-http-client": "github:aurelia/http-client@0.5.2",
     "breeze": "npm:breeze-client@1.5.4",
     "github:aurelia/binding@0.3.4": {
       "aurelia-dependency-injection": "github:aurelia/dependency-injection@0.4.2",
@@ -21,8 +21,8 @@ System.config({
       "aurelia-metadata": "github:aurelia/metadata@0.3.1",
       "core-js": "npm:core-js@0.4.10"
     },
-    "github:aurelia/http-client@0.4.4": {
-      "aurelia-path": "github:aurelia/path@0.4.2",
+    "github:aurelia/http-client@0.5.2": {
+      "aurelia-path": "github:aurelia/path@0.4.3",
       "core-js": "npm:core-js@0.4.10"
     },
     "github:jspm/nodelibs-process@0.1.1": {
@@ -33,4 +33,3 @@ System.config({
     }
   }
 });
-

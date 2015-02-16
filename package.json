@@ -27,7 +27,7 @@
     },
     "dependencies": {
       "aurelia-binding": "^0.3.4",
-      "aurelia-http-client": "^0.4.4",
+      "aurelia-http-client": "^0.5.2",
       "breeze": "^1.5.4"
     }
   },
