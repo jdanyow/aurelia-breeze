@@ -1,6 +1,6 @@
 import {
-  BreezeObjectObserver, 
-  BreezePropertyObserver, 
+  BreezeObjectObserver,
+  BreezePropertyObserver,
 } from './property-observation';
 
 function createObserverLookup(obj) {
@@ -18,7 +18,7 @@ function createObserverLookup(obj) {
 
 function createCanObserveLookup(entityType) {
   var value = {}, properties = entityType.getProperties(), property, ii = properties.length, i;
-  
+
   for(i = 0; i < ii; i++) {
     property = properties[i];
 
@@ -58,7 +58,7 @@ export class BreezeObservationAdapter {
 
     if (!this.handlesProperty(object, propertyName))
       throw new Error(`BreezeBindingAdapter does not support observing the ${propertyName} property.  Check the handlesProperty method before calling createObserver.`);
-    
+
     observerLookup = object.__breezeObserver__ || createObserverLookup(object);
     return observerLookup.getObserver(propertyName);
   }

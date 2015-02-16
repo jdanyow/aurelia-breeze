@@ -1,27 +1,27 @@
-System.register(["aurelia-http-client", "breeze"], function (_export) {
+System.register(["breeze"], function (_export) {
   "use strict";
 
-  var HttpClient, Headers, breeze, _prototypeProperties, AjaxAdapter, HttpResponse;
+  var breeze, _prototypeProperties, createHttpClient, AjaxAdapter, HttpResponse;
+  _export("setHttpClientFactory", setHttpClientFactory);
 
-
-  function getQueryString(params) {
-    var q = "";
-    if (params) q = param(params);
-    if (q.length) q = "?" + q;
-    return q;
+  function setHttpClientFactory(createClient) {
+    createHttpClient = createClient;
   }
 
-  function param(map) {
-    var r20 = /%20/g;
-    return Object.keys(map).map(function (key) {
-      return encodeURIComponent(key) + "=" + encodeURIComponent(map[key]);
-    }).join("&").replace(r20, "+");
+  function clone(obj) {
+    if (obj == null || typeof obj != "object") return obj;
+
+    var temp = obj.constructor();
+
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        temp[key] = clone(obj[key]);
+      }
+    }
+    return temp;
   }
   return {
-    setters: [function (_aureliaHttpClient) {
-      HttpClient = _aureliaHttpClient.HttpClient;
-      Headers = _aureliaHttpClient.Headers;
-    }, function (_breeze) {
+    setters: [function (_breeze) {
       breeze = _breeze["default"];
     }],
     execute: function () {
@@ -35,6 +35,12 @@ System.register(["aurelia-http-client", "breeze"], function (_export) {
         }
 
         _prototypeProperties(AjaxAdapter, null, {
+          httpClient: {
+            get: function () {
+              return this.client || (this.client = createHttpClient());
+            },
+            configurable: true
+          },
           initialize: {
             value: function initialize() {},
             writable: true,
@@ -42,26 +48,17 @@ System.register(["aurelia-http-client", "breeze"], function (_export) {
           },
           ajax: {
             value: function ajax(config) {
-              var method, headers, client, queryString, requestInfo;
-
-              headers = new Headers(this.defaultHeaders || {});
-              if (config.contentType) headers.add("Content-Type", config.contentType);
+              var requestInfo, header, method;
 
               requestInfo = {
                 adapter: this,
-                config: {
-                  type: config.type,
-                  url: config.url,
-                  headers: headers,
-                  params: config.params,
-                  contentType: config.contentType,
-                  data: config.data,
-                  dataType: config.dataType,
-                  crossDomain: config.crossDomain },
+                config: clone(config),
                 zConfig: config,
                 success: config.success,
                 error: config.error
               };
+              requestInfo.config.request = this.httpClient.request;
+              requestInfo.config.headers = clone(this.defaultHeaders || {});
 
               if (breeze.core.isFunction(this.requestInterceptor)) {
                 this.requestInterceptor(requestInfo);
@@ -69,15 +66,20 @@ System.register(["aurelia-http-client", "breeze"], function (_export) {
                   this.requestInterceptor = null;
                 }
                 if (!requestInfo.config) return;
-                config = requestInfo.config;
+              }
+              config = requestInfo.config;
+
+              config.request.withParams(config.params);
+              if (config.contentType) config.request.withHeader("Content-Type", config.contentType);
+              for (var header in config.headers) {
+                if (config.headers.hasOwnProperty(header)) {
+                  config.request.withHeader(header, config.headers[header]);
+                }
               }
 
               method = config.dataType && config.dataType.toLowerCase() === "jsonp" ? "jsonp" : config.type.toLowerCase();
 
-              queryString = getQueryString(config.params);
-
-              client = new HttpClient(undefined, headers);
-              client[method](config.url + queryString, config.data).then(function (r) {
+              config.request[method](config.url, config.data).then(function (r) {
                 return requestInfo.success(new HttpResponse(r, requestInfo.zConfig));
               }, function (r) {
                 return requestInfo.error(new HttpResponse(r, requestInfo.zConfig));
