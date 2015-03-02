@@ -26,4 +26,6 @@ function install(aurelia) {
 
   breeze.config.setQ(Q);
 }
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});

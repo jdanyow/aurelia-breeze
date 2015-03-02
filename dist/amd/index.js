@@ -25,5 +25,7 @@ define(["exports", "breeze", "aurelia-binding", "aurelia-http-client", "./observ
 
     breeze.config.setQ(Q);
   }
-  exports.__esModule = true;
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 });

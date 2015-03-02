@@ -3,6 +3,8 @@ define(["exports", "./property-observation"], function (exports, _propertyObserv
 
   var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
+  var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
   var BreezeObjectObserver = _propertyObservation.BreezeObjectObserver;
   var BreezePropertyObserver = _propertyObservation.BreezePropertyObserver;
 
@@ -44,15 +46,18 @@ define(["exports", "./property-observation"], function (exports, _propertyObserv
   }
 
   var BreezeObservationAdapter = exports.BreezeObservationAdapter = (function () {
-    function BreezeObservationAdapter() {}
+    function BreezeObservationAdapter() {
+      _classCallCheck(this, BreezeObservationAdapter);
+    }
 
     _prototypeProperties(BreezeObservationAdapter, null, {
       handlesProperty: {
         value: function handlesProperty(object, propertyName) {
           var entityType, canObserve;
 
-          if (!object.entityAspect || !(entityType = object.entityType)) return false;
-
+          if (!object.entityAspect || !(entityType = object.entityType)) {
+            return false;
+          }
           canObserve = entityType.__canObserve__ || createCanObserveLookup(entityType);
 
           return !!canObserve[propertyName];
@@ -76,5 +81,7 @@ define(["exports", "./property-observation"], function (exports, _propertyObserv
 
     return BreezeObservationAdapter;
   })();
-  exports.__esModule = true;
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 });

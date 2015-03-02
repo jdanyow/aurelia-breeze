@@ -1,7 +1,7 @@
 System.register(["breeze"], function (_export) {
   "use strict";
 
-  var breeze, _prototypeProperties, createHttpClient, AjaxAdapter, HttpResponse;
+  var breeze, _prototypeProperties, _classCallCheck, createHttpClient, AjaxAdapter, HttpResponse;
   _export("setHttpClientFactory", setHttpClientFactory);
 
   function setHttpClientFactory(createClient) {
@@ -9,9 +9,9 @@ System.register(["breeze"], function (_export) {
   }
 
   function clone(obj) {
-    if (obj == null || typeof obj != "object") return obj;
-
-    var temp = obj.constructor();
+    if (obj == null || typeof obj != "object") {
+      return obj;
+    }var temp = obj.constructor();
 
     for (var key in obj) {
       if (obj.hasOwnProperty(key)) {
@@ -27,8 +27,12 @@ System.register(["breeze"], function (_export) {
     execute: function () {
       _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
+      _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
       AjaxAdapter = _export("AjaxAdapter", (function () {
         function AjaxAdapter() {
+          _classCallCheck(this, AjaxAdapter);
+
           this.name = "aurelia";
           this.defaultHeaders;
           this.requestInterceptor = null;
@@ -65,7 +69,9 @@ System.register(["breeze"], function (_export) {
                 if (this.requestInterceptor.oneTime) {
                   this.requestInterceptor = null;
                 }
-                if (!requestInfo.config) return;
+                if (!requestInfo.config) {
+                  return;
+                }
               }
               config = requestInfo.config;
 
@@ -94,6 +100,8 @@ System.register(["breeze"], function (_export) {
       })());
       HttpResponse = _export("HttpResponse", (function () {
         function HttpResponse(aureliaResponse, config) {
+          _classCallCheck(this, HttpResponse);
+
           this.config = config;
           this.status = aureliaResponse.statusCode;
           this.data = aureliaResponse.content;
@@ -103,8 +111,9 @@ System.register(["breeze"], function (_export) {
         _prototypeProperties(HttpResponse, null, {
           getHeader: {
             value: function getHeader(headerName) {
-              if (headerName === null || headerName === undefined || headerName === "") return this.headers.headers;
-              return this.headers.get(headerName);
+              if (headerName === null || headerName === undefined || headerName === "") {
+                return this.headers.headers;
+              }return this.headers.get(headerName);
             },
             writable: true,
             configurable: true

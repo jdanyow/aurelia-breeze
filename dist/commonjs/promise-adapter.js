@@ -2,8 +2,12 @@
 
 var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
+var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
 var Q = exports.Q = (function () {
-  function Q() {}
+  function Q() {
+    _classCallCheck(this, Q);
+  }
 
   _prototypeProperties(Q, {
     defer: {
@@ -36,6 +40,8 @@ var Q = exports.Q = (function () {
   return Q;
 })();
 var Deferred = exports.Deferred = function Deferred() {
+  _classCallCheck(this, Deferred);
+
   var self = this;
   this.promise = new Promise(function (resolve, reject) {
     self.resolve = resolve;
@@ -43,4 +49,6 @@ var Deferred = exports.Deferred = function Deferred() {
   });
 };
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});

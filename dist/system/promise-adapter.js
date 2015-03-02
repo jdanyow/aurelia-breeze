@@ -1,14 +1,18 @@
 System.register([], function (_export) {
   "use strict";
 
-  var _prototypeProperties, Q, Deferred;
+  var _prototypeProperties, _classCallCheck, Q, Deferred;
   return {
     setters: [],
     execute: function () {
       _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
+      _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
       Q = _export("Q", (function () {
-        function Q() {}
+        function Q() {
+          _classCallCheck(this, Q);
+        }
 
         _prototypeProperties(Q, {
           defer: {
@@ -41,6 +45,8 @@ System.register([], function (_export) {
         return Q;
       })());
       Deferred = _export("Deferred", function Deferred() {
+        _classCallCheck(this, Deferred);
+
         var self = this;
         this.promise = new Promise(function (resolve, reject) {
           self.resolve = resolve;

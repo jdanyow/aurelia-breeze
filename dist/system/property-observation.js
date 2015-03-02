@@ -1,14 +1,18 @@
 System.register([], function (_export) {
   "use strict";
 
-  var _prototypeProperties, BreezePropertyObserver, BreezeObjectObserver;
+  var _prototypeProperties, _classCallCheck, BreezePropertyObserver, BreezeObjectObserver;
   return {
     setters: [],
     execute: function () {
       _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
+      _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
       BreezePropertyObserver = _export("BreezePropertyObserver", (function () {
         function BreezePropertyObserver(owner, obj, propertyName) {
+          _classCallCheck(this, BreezePropertyObserver);
+
           this.owner = owner;
           this.obj = obj;
           this.propertyName = propertyName;
@@ -56,6 +60,8 @@ System.register([], function (_export) {
       })());
       BreezeObjectObserver = _export("BreezeObjectObserver", (function () {
         function BreezeObjectObserver(obj) {
+          _classCallCheck(this, BreezeObjectObserver);
+
           this.obj = obj;
           this.observers = {};
         }

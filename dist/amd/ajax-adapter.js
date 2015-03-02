@@ -5,6 +5,8 @@ define(["exports", "breeze"], function (exports, _breeze) {
 
   var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
 
+  var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
   exports.setHttpClientFactory = setHttpClientFactory;
   var breeze = _interopRequire(_breeze);
 
@@ -16,6 +18,8 @@ define(["exports", "breeze"], function (exports, _breeze) {
 
   var AjaxAdapter = exports.AjaxAdapter = (function () {
     function AjaxAdapter() {
+      _classCallCheck(this, AjaxAdapter);
+
       this.name = "aurelia";
       this.defaultHeaders;
       this.requestInterceptor = null;
@@ -52,7 +56,9 @@ define(["exports", "breeze"], function (exports, _breeze) {
             if (this.requestInterceptor.oneTime) {
               this.requestInterceptor = null;
             }
-            if (!requestInfo.config) return;
+            if (!requestInfo.config) {
+              return;
+            }
           }
           config = requestInfo.config;
 
@@ -81,6 +87,8 @@ define(["exports", "breeze"], function (exports, _breeze) {
   })();
   var HttpResponse = exports.HttpResponse = (function () {
     function HttpResponse(aureliaResponse, config) {
+      _classCallCheck(this, HttpResponse);
+
       this.config = config;
       this.status = aureliaResponse.statusCode;
       this.data = aureliaResponse.content;
@@ -90,8 +98,9 @@ define(["exports", "breeze"], function (exports, _breeze) {
     _prototypeProperties(HttpResponse, null, {
       getHeader: {
         value: function getHeader(headerName) {
-          if (headerName === null || headerName === undefined || headerName === "") return this.headers.headers;
-          return this.headers.get(headerName);
+          if (headerName === null || headerName === undefined || headerName === "") {
+            return this.headers.headers;
+          }return this.headers.get(headerName);
         },
         writable: true,
         configurable: true
@@ -103,9 +112,9 @@ define(["exports", "breeze"], function (exports, _breeze) {
 
 
   function clone(obj) {
-    if (obj == null || typeof obj != "object") return obj;
-
-    var temp = obj.constructor();
+    if (obj == null || typeof obj != "object") {
+      return obj;
+    }var temp = obj.constructor();
 
     for (var key in obj) {
       if (obj.hasOwnProperty(key)) {
@@ -114,5 +123,7 @@ define(["exports", "breeze"], function (exports, _breeze) {
     }
     return temp;
   }
-  exports.__esModule = true;
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
 });
