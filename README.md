@@ -30,6 +30,10 @@ No.  Breeze doesn't force you to use a particular ajax implementation.  By defau
 
 No.  Normally Breeze depends on [Q](https://github.com/kriskowal/q) for it's Promise implementation.  Since you're using Aurelia which depends upon [ES6 promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise) we can assume a Promise implementation is already defined.  This means we can give Breeze [an object](https://github.com/jdanyow/aurelia-breeze/blob/master/src/promise-adapter.js) that has a Q style API but uses ES6 Promises behind the scenes.
 
+**Are detached entities supported?**
+
+Yes.  This is a beta feature and may be removed in a future release.  More info [here](https://github.com/jdanyow/aurelia-breeze/issues/7).
+
 ## Using The Adapter
 
 This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Aurelia project according to the guide [here](http://aurelia.io/get-started.html).
@@ -62,11 +66,11 @@ This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Au
 
   ```javascript
   import breeze from 'breeze';
-  
+
   var query = new breeze.EntityQuery();
   ...
   ```
-  
+
 ## Dependencies
 
 * [aurelia-binding](https://github.com/aurelia/binding)
