@@ -1,8 +1,5 @@
 System.register(["./property-observation"], function (_export) {
-  "use strict";
-
-  var BreezeObjectObserver, BreezePropertyObserver, _prototypeProperties, _classCallCheck, BreezeObservationAdapter;
-
+  var BreezeObjectObserver, BreezePropertyObserver, _createClass, _classCallCheck, BreezeObservationAdapter;
 
   function createObserverLookup(obj) {
     var value = new BreezeObjectObserver(obj);
@@ -27,6 +24,9 @@ System.register(["./property-observation"], function (_export) {
     for (i = 0; i < ii; i++) {
       property = properties[i];
 
+      // determine whether the adapter should handle the property...
+      // all combinations of navigation/data properties * scalar/non-scalar properties are handled EXCEPT
+      // non-scalar navigation properties because Aurelia handles these well natively.
       value[property.name] = property.isDataProperty || property.isScalar;
     }
 
@@ -46,7 +46,9 @@ System.register(["./property-observation"], function (_export) {
       BreezePropertyObserver = _propertyObservation.BreezePropertyObserver;
     }],
     execute: function () {
-      _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+      "use strict";
+
+      _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
       _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
@@ -55,20 +57,12 @@ System.register(["./property-observation"], function (_export) {
           _classCallCheck(this, BreezeObservationAdapter);
         }
 
-        _prototypeProperties(BreezeObservationAdapter, null, {
+        _createClass(BreezeObservationAdapter, {
           handlesProperty: {
             value: function handlesProperty(object, propertyName) {
-              var entityType, canObserve;
-
-              if (!object.entityAspect || !(entityType = object.entityType)) {
-                return false;
-              }
-              canObserve = entityType.__canObserve__ || createCanObserveLookup(entityType);
-
-              return !!canObserve[propertyName];
-            },
-            writable: true,
-            configurable: true
+              var type = object.entityType;
+              return type ? !!(type.__canObserve__ || createCanObserveLookup(type))[propertyName] : false;
+            }
           },
           getObserver: {
             value: function getObserver(object, propertyName) {
@@ -78,9 +72,7 @@ System.register(["./property-observation"], function (_export) {
 
               observerLookup = object.__breezeObserver__ || createObserverLookup(object);
               return observerLookup.getObserver(propertyName);
-            },
-            writable: true,
-            configurable: true
+            }
           }
         });
 

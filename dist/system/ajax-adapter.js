@@ -1,35 +1,43 @@
 System.register(["breeze"], function (_export) {
-  "use strict";
+  var breeze, _createClass, _classCallCheck, extend, HttpResponse, AjaxAdapter;
 
-  var breeze, _prototypeProperties, _classCallCheck, createHttpClient, AjaxAdapter, HttpResponse;
-  _export("setHttpClientFactory", setHttpClientFactory);
-
-  function setHttpClientFactory(createClient) {
-    createHttpClient = createClient;
-  }
-
-  function clone(obj) {
-    if (obj == null || typeof obj != "object") {
-      return obj;
-    }var temp = obj.constructor();
-
-    for (var key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        temp[key] = clone(obj[key]);
-      }
-    }
-    return temp;
-  }
   return {
     setters: [function (_breeze) {
       breeze = _breeze["default"];
     }],
     execute: function () {
-      _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+      "use strict";
+
+      _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
       _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-      AjaxAdapter = _export("AjaxAdapter", (function () {
+      extend = breeze.core.extend;
+
+      HttpResponse = (function () {
+        function HttpResponse(aureliaResponse, config) {
+          _classCallCheck(this, HttpResponse);
+
+          this.config = config;
+          this.status = aureliaResponse.statusCode;
+          this.data = aureliaResponse.content;
+          this.headers = aureliaResponse.headers;
+        }
+
+        _createClass(HttpResponse, {
+          getHeader: {
+            value: function getHeader(headerName) {
+              if (headerName === null || headerName === undefined || headerName === "") {
+                return this.headers.headers;
+              }return this.headers.get(headerName);
+            }
+          }
+        });
+
+        return HttpResponse;
+      })();
+
+      AjaxAdapter = (function () {
         function AjaxAdapter() {
           _classCallCheck(this, AjaxAdapter);
 
@@ -38,32 +46,36 @@ System.register(["breeze"], function (_export) {
           this.requestInterceptor = null;
         }
 
-        _prototypeProperties(AjaxAdapter, null, {
+        _createClass(AjaxAdapter, {
+          setHttpClientFactory: {
+            value: function setHttpClientFactory(createHttpClient) {
+              this.createHttpClient = createHttpClient;
+            }
+          },
           httpClient: {
             get: function () {
-              return this.client || (this.client = createHttpClient());
-            },
-            configurable: true
+              return this.client || (this.client = this.createHttpClient());
+            }
           },
           initialize: {
-            value: function initialize() {},
-            writable: true,
-            configurable: true
+            value: function initialize() {}
           },
           ajax: {
             value: function ajax(config) {
-              var requestInfo, header, method;
+              var requestInfo, header, method, request;
 
+              // build the request info object.
               requestInfo = {
                 adapter: this,
-                config: clone(config),
+                config: extend({}, config),
                 zConfig: config,
                 success: config.success,
                 error: config.error
               };
-              requestInfo.config.request = this.httpClient.request;
-              requestInfo.config.headers = clone(this.defaultHeaders || {});
+              requestInfo.config.request = this.httpClient.createRequest();
+              requestInfo.config.headers = extend(extend({}, this.defaultHeaders), config.headers);
 
+              // submit the request-info for interception.
               if (breeze.core.isFunction(this.requestInterceptor)) {
                 this.requestInterceptor(requestInfo);
                 if (this.requestInterceptor.oneTime) {
@@ -75,53 +87,49 @@ System.register(["breeze"], function (_export) {
               }
               config = requestInfo.config;
 
-              config.request.withParams(config.params);
-              if (config.contentType) config.request.withHeader("Content-Type", config.contentType);
-              for (var header in config.headers) {
+              // configure the request...
+              request = config.request;
+
+              // uri.
+              request.withUri(config.url);
+
+              // method.
+              method = config.dataType && config.dataType.toLowerCase() === "jsonp" ? "jsonp" : config.type.toLowerCase();
+              method = "as" + method.charAt(0).toUpperCase() + method.slice(1);
+              request[method]();
+
+              // params.
+              request.withParams(config.params);
+
+              // headers.
+              if (config.contentType) {
+                request.withHeader("Content-Type", config.contentType);
+              }
+              for (header in config.headers) {
                 if (config.headers.hasOwnProperty(header)) {
-                  config.request.withHeader(header, config.headers[header]);
+                  request.withHeader(header, config.headers[header]);
                 }
               }
 
-              method = config.dataType && config.dataType.toLowerCase() === "jsonp" ? "jsonp" : config.type.toLowerCase();
+              // content.
+              if (config.hasOwnProperty("data")) {
+                request.withContent(config.data);
+              }
 
-              config.request[method](config.url, config.data).then(function (r) {
+              // send the request.
+              request.send().then(function (r) {
                 return requestInfo.success(new HttpResponse(r, requestInfo.zConfig));
               }, function (r) {
                 return requestInfo.error(new HttpResponse(r, requestInfo.zConfig));
               });
-            },
-            writable: true,
-            configurable: true
+            }
           }
         });
 
         return AjaxAdapter;
-      })());
-      HttpResponse = _export("HttpResponse", (function () {
-        function HttpResponse(aureliaResponse, config) {
-          _classCallCheck(this, HttpResponse);
+      })();
 
-          this.config = config;
-          this.status = aureliaResponse.statusCode;
-          this.data = aureliaResponse.content;
-          this.headers = aureliaResponse.headers;
-        }
-
-        _prototypeProperties(HttpResponse, null, {
-          getHeader: {
-            value: function getHeader(headerName) {
-              if (headerName === null || headerName === undefined || headerName === "") {
-                return this.headers.headers;
-              }return this.headers.get(headerName);
-            },
-            writable: true,
-            configurable: true
-          }
-        });
-
-        return HttpResponse;
-      })());
+      breeze.config.registerAdapter("ajax", AjaxAdapter);
     }
   };
 });

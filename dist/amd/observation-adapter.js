@@ -1,13 +1,15 @@
 define(["exports", "./property-observation"], function (exports, _propertyObservation) {
   "use strict";
 
-  var _prototypeProperties = function (child, staticProps, instanceProps) { if (staticProps) Object.defineProperties(child, staticProps); if (instanceProps) Object.defineProperties(child.prototype, instanceProps); };
+  var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
   var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
   var BreezeObjectObserver = _propertyObservation.BreezeObjectObserver;
   var BreezePropertyObserver = _propertyObservation.BreezePropertyObserver;
-
 
   function createObserverLookup(obj) {
     var value = new BreezeObjectObserver(obj);
@@ -32,6 +34,9 @@ define(["exports", "./property-observation"], function (exports, _propertyObserv
     for (i = 0; i < ii; i++) {
       property = properties[i];
 
+      // determine whether the adapter should handle the property...
+      // all combinations of navigation/data properties * scalar/non-scalar properties are handled EXCEPT
+      // non-scalar navigation properties because Aurelia handles these well natively.
       value[property.name] = property.isDataProperty || property.isScalar;
     }
 
@@ -50,20 +55,12 @@ define(["exports", "./property-observation"], function (exports, _propertyObserv
       _classCallCheck(this, BreezeObservationAdapter);
     }
 
-    _prototypeProperties(BreezeObservationAdapter, null, {
+    _createClass(BreezeObservationAdapter, {
       handlesProperty: {
         value: function handlesProperty(object, propertyName) {
-          var entityType, canObserve;
-
-          if (!object.entityAspect || !(entityType = object.entityType)) {
-            return false;
-          }
-          canObserve = entityType.__canObserve__ || createCanObserveLookup(entityType);
-
-          return !!canObserve[propertyName];
-        },
-        writable: true,
-        configurable: true
+          var type = object.entityType;
+          return type ? !!(type.__canObserve__ || createCanObserveLookup(type))[propertyName] : false;
+        }
       },
       getObserver: {
         value: function getObserver(object, propertyName) {
@@ -73,15 +70,10 @@ define(["exports", "./property-observation"], function (exports, _propertyObserv
 
           observerLookup = object.__breezeObserver__ || createObserverLookup(object);
           return observerLookup.getObserver(propertyName);
-        },
-        writable: true,
-        configurable: true
+        }
       }
     });
 
     return BreezeObservationAdapter;
   })();
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
 });
