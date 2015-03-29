@@ -1,18 +1,15 @@
-import {HttpClient} from 'aurelia-http-client';
-import {AjaxAdapter, setHttpClientFactory} from '../src/ajax-adapter';
 import breeze from 'breeze';
-import initMetadata from './metadata';
+import getEntityManager from './breeze-setup';
+import {HttpClient} from 'aurelia-http-client';
 
 describe('ajax adapter', function() {
-  var adapter;
+  var adapter, entityManager;
 
   beforeAll(() => {
-    setHttpClientFactory(() => new HttpClient());
-    initMetadata(this);
-  });
-
-  beforeEach(() => {
-    adapter = new AjaxAdapter();
+    var httpClient = new HttpClient();
+    entityManager = getEntityManager();
+    adapter = breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
+    adapter.setHttpClientFactory(() => httpClient);
     adapter.defaultHeaders = {
       Authorization: 'bearer token'
     };
@@ -20,7 +17,7 @@ describe('ajax adapter', function() {
     jasmine.Ajax.install();
   });
 
-  afterEach(() => {
+  afterAll(() => {
     jasmine.Ajax.uninstall();
   });
 

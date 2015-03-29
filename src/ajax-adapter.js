@@ -1,72 +1,8 @@
 import breeze from 'breeze';
 
-var createHttpClient;
+var extend = breeze.core.extend;
 
-export function setHttpClientFactory(createClient) {
-  createHttpClient = createClient;
-}
-
-export class AjaxAdapter {
-  constructor() {
-    this.name = 'aurelia';
-    this.defaultHeaders;
-    this.requestInterceptor = null;
-  }
-
-  get httpClient() {
-    return this.client || (this.client = createHttpClient());
-  }
-
-  initialize() {}
-
-  ajax(config) {
-    var requestInfo, header, method;
-
-    // build the request info object.
-    requestInfo = {
-      adapter: this,
-      config: clone(config),
-      zConfig: config,
-      success: config.success,
-      error: config.error
-    };
-    requestInfo.config.request = this.httpClient.request;
-    requestInfo.config.headers = clone(this.defaultHeaders || {});
-
-    // submit the request-info for interception.
-    if (breeze.core.isFunction(this.requestInterceptor)) {
-      this.requestInterceptor(requestInfo);
-      if (this.requestInterceptor.oneTime) {
-        this.requestInterceptor = null;
-      }
-      if (!requestInfo.config)
-        return;
-    }
-    config = requestInfo.config;
-
-    // configure the request.
-    config.request.withParams(config.params);
-    if (config.contentType)
-      config.request.withHeader('Content-Type', config.contentType);
-    for(var header in config.headers) {
-      if(config.headers.hasOwnProperty(header)) {
-        config.request.withHeader(header, config.headers[header]);
-      }
-    }
-
-    // determine which request method to use.
-    method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
-
-    // send the request.
-    config.request[method](config.url, config.data)
-      .then(
-        r => requestInfo.success(new HttpResponse(r, requestInfo.zConfig)),
-        r => requestInfo.error(new HttpResponse(r, requestInfo.zConfig))
-      );
-  }
-}
-
-export class HttpResponse {
+class HttpResponse {
   constructor(aureliaResponse, config) {
     this.config = config;
     this.status = aureliaResponse.statusCode;
@@ -81,16 +17,84 @@ export class HttpResponse {
   }
 }
 
-function clone(obj) {
-  if(obj == null || typeof(obj) != 'object')
-    return obj;
-
-  var temp = obj.constructor();
-
-  for(var key in obj) {
-    if(obj.hasOwnProperty(key)) {
-      temp[key] = clone(obj[key]);
-    }
+class AjaxAdapter {
+  constructor() {
+    this.name = 'aurelia';
+    this.defaultHeaders;
+    this.requestInterceptor = null;
   }
-  return temp;
+
+  setHttpClientFactory(createHttpClient) {
+    this.createHttpClient = createHttpClient;
+  }
+
+  get httpClient() {
+    return this.client || (this.client = this.createHttpClient());
+  }
+
+  initialize() {}
+
+  ajax(config) {
+    var requestInfo, header, method, request;
+
+    // build the request info object.
+    requestInfo = {
+      adapter: this,
+      config: extend({}, config),
+      zConfig: config,
+      success: config.success,
+      error: config.error
+    };
+    requestInfo.config.request = this.httpClient.createRequest();
+    requestInfo.config.headers = extend(extend({}, this.defaultHeaders), config.headers);
+
+    // submit the request-info for interception.
+    if (breeze.core.isFunction(this.requestInterceptor)) {
+      this.requestInterceptor(requestInfo);
+      if (this.requestInterceptor.oneTime) {
+        this.requestInterceptor = null;
+      }
+      if (!requestInfo.config)
+        return;
+    }
+    config = requestInfo.config;
+
+    // configure the request...
+    request = config.request;
+
+    // uri.
+    request.withUri(config.url);
+
+    // method.
+    method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
+    method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);
+    request[method]();
+
+    // params.
+    request.withParams(config.params);
+
+    // headers.
+    if (config.contentType) {
+      request.withHeader('Content-Type', config.contentType);
+    }
+    for(header in config.headers) {
+      if(config.headers.hasOwnProperty(header)) {
+        request.withHeader(header, config.headers[header]);
+      }
+    }
+
+    // content.
+    if (config.hasOwnProperty('data')) {
+      request.withContent(config.data);
+    }
+
+    // send the request.
+    request.send()
+      .then(
+        r => requestInfo.success(new HttpResponse(r, requestInfo.zConfig)),
+        r => requestInfo.error(new HttpResponse(r, requestInfo.zConfig))
+      );
+  }
 }
+
+breeze.config.registerAdapter("ajax", AjaxAdapter);
