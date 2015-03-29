@@ -40,17 +40,8 @@ function createCanObserveLookup(entityType) {
 
 export class BreezeObservationAdapter {
   handlesProperty(object, propertyName) {
-    var entityType, canObserve;
-
-    // breeze entities have entityAspect and entityType properties.
-    if (!object.entityAspect || !(entityType = object.entityType))
-      return false;
-
-    // get or create the lookup used to avoid reflecting on the breeze entityType multiple times.
-    canObserve = entityType.__canObserve__ || createCanObserveLookup(entityType);
-
-    // return canObserve- coerce undefined values to false.
-    return !!canObserve[propertyName];
+    var type = object.entityType
+    return type ? !!(type.__canObserve__ || createCanObserveLookup(type))[propertyName] : false;
   }
 
   getObserver(object, propertyName) {
