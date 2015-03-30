@@ -17,6 +17,8 @@ var BreezeObservationAdapter = require("./observation-adapter").BreezeObservatio
 
 var HttpClient = require("aurelia-http-client").HttpClient;
 
+require("./ajax-adapter");
+
 function install(aurelia) {
   // ensure breeze is using the modelLibrary backing store (vs Knockout or Backbone)
   breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");

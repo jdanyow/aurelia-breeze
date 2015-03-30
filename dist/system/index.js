@@ -1,4 +1,4 @@
-System.register(["breeze", "./promise-adapter", "aurelia-binding", "./observation-adapter", "aurelia-http-client"], function (_export) {
+System.register(["breeze", "./promise-adapter", "aurelia-binding", "./observation-adapter", "aurelia-http-client", "./ajax-adapter"], function (_export) {
   var breeze, Q, ObjectObservationAdapter, BreezeObservationAdapter, HttpClient;
 
   _export("install", install);
@@ -34,7 +34,7 @@ System.register(["breeze", "./promise-adapter", "aurelia-binding", "./observatio
       BreezeObservationAdapter = _observationAdapter.BreezeObservationAdapter;
     }, function (_aureliaHttpClient) {
       HttpClient = _aureliaHttpClient.HttpClient;
-    }],
+    }, function (_ajaxAdapter) {}],
     execute: function () {
       "use strict";
     }
