@@ -1,15 +1,15 @@
 define(["exports"], function (exports) {
   "use strict";
 
-  var _createClass = (function () { function defineProperties(target, props) { for (var key in props) { var prop = props[key]; prop.configurable = true; if (prop.value) prop.writable = true; } Object.defineProperties(target, props); } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
   var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
+
+  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
 
-  var BreezePropertyObserver = exports.BreezePropertyObserver = (function () {
+  var BreezePropertyObserver = (function () {
     function BreezePropertyObserver(obj, propertyName, subscribe) {
       _classCallCheck(this, BreezePropertyObserver);
 
@@ -18,23 +18,24 @@ define(["exports"], function (exports) {
       this.subscribe = subscribe;
     }
 
-    _createClass(BreezePropertyObserver, {
-      getValue: {
-        value: function getValue() {
-          return this.obj[this.propertyName];
-        }
-      },
-      setValue: {
-        value: function setValue(newValue) {
-          this.obj[this.propertyName] = newValue;
-        }
+    _createClass(BreezePropertyObserver, [{
+      key: "getValue",
+      value: function getValue() {
+        return this.obj[this.propertyName];
       }
-    });
+    }, {
+      key: "setValue",
+      value: function setValue(newValue) {
+        this.obj[this.propertyName] = newValue;
+      }
+    }]);
 
     return BreezePropertyObserver;
   })();
 
-  var BreezeObjectObserver = exports.BreezeObjectObserver = (function () {
+  exports.BreezePropertyObserver = BreezePropertyObserver;
+
+  var BreezeObjectObserver = (function () {
     function BreezeObjectObserver(obj) {
       _classCallCheck(this, BreezeObjectObserver);
 
@@ -44,64 +45,63 @@ define(["exports"], function (exports) {
       this.callbackCount = 0;
     }
 
-    _createClass(BreezeObjectObserver, {
-      subscribe: {
-        value: function subscribe(propertyName, callback) {
-          if (!this.callbacks[propertyName]) {
-            this.callbacks[propertyName] = [callback];
-          } else if (this.callbacks[propertyName].indexOf(callback) !== -1) {
-            return; // throw?
-          } else {
-            this.callbacks[propertyName].push(callback);
-          }
-
-          if (this.callbackCount === 0) {
-            this.subscription = this.obj.entityAspect.propertyChanged.subscribe(this.handleChanges.bind(this));
-          }
-
-          this.callbackCount++;
-
-          return this.unsubscribe.bind(this, propertyName, callback);
+    _createClass(BreezeObjectObserver, [{
+      key: "subscribe",
+      value: function subscribe(propertyName, callback) {
+        if (this.callbacks[propertyName]) {
+          this.callbacks[propertyName].push(callback);
+        } else {
+          this.callbacks[propertyName] = [callback];
         }
-      },
-      unsubscribe: {
-        value: function unsubscribe(propertyName, callback) {
-          var callbacks = this.callbacks[propertyName],
-              index = callbacks.indexOf(callback);
-          if (index === -1) {
-            return; // throw?
-          }
-          callbacks.splice(callbacks.indexOf(callback), 1);
-          this.callbackCount--;
-          if (this.callbackCount === 0) {
-            this.obj.entityAspect.propertyChanged.unsubscribe(this.subscription);
-          }
-        }
-      },
-      getObserver: {
-        value: function getObserver(propertyName) {
-          return this.observers[propertyName] || (this.observers[propertyName] = new BreezePropertyObserver(this.obj, propertyName, this.subscribe.bind(this, propertyName)));
-        }
-      },
-      handleChanges: {
-        value: function handleChanges(change) {
-          var callbacks = this.callbacks[change.propertyName],
-              i,
-              ii,
-              newValue;
-          if (!callbacks) {
-            return;
-          }
 
-          newValue = this.obj[change.propertyName];
+        if (this.callbackCount === 0) {
+          this.subscription = this.obj.entityAspect.propertyChanged.subscribe(this.handleChanges.bind(this));
+        }
 
-          for (i = 0, ii = callbacks.length; i < ii; i++) {
-            callbacks[i](newValue, change.oldValue);
-          }
+        this.callbackCount++;
+
+        return this.unsubscribe.bind(this, propertyName, callback);
+      }
+    }, {
+      key: "unsubscribe",
+      value: function unsubscribe(propertyName, callback) {
+        var callbacks = this.callbacks[propertyName],
+            index = callbacks.indexOf(callback);
+        if (index === -1) {
+          return;
+        }
+        callbacks.splice(index, 1);
+        this.callbackCount--;
+        if (this.callbackCount === 0) {
+          this.obj.entityAspect.propertyChanged.unsubscribe(this.subscription);
         }
       }
-    });
+    }, {
+      key: "getObserver",
+      value: function getObserver(propertyName) {
+        return this.observers[propertyName] || (this.observers[propertyName] = new BreezePropertyObserver(this.obj, propertyName, this.subscribe.bind(this, propertyName)));
+      }
+    }, {
+      key: "handleChanges",
+      value: function handleChanges(change) {
+        var callbacks = this.callbacks[change.propertyName],
+            i,
+            ii,
+            newValue;
+        if (!callbacks) {
+          return;
+        }
+
+        newValue = this.obj[change.propertyName];
+
+        for (i = 0, ii = callbacks.length; i < ii; i++) {
+          callbacks[i](newValue, change.oldValue);
+        }
+      }
+    }]);
 
     return BreezeObjectObserver;
   })();
+
+  exports.BreezeObjectObserver = BreezeObjectObserver;
 });

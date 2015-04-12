@@ -23,12 +23,10 @@ export class BreezeObjectObserver {
   }
 
   subscribe(propertyName, callback){
-    if (!this.callbacks[propertyName]) {
-      this.callbacks[propertyName] = [callback];
-    } else if (this.callbacks[propertyName].indexOf(callback) !== -1) {
-      return; // throw?
-    } else {
+    if (this.callbacks[propertyName]) {
       this.callbacks[propertyName].push(callback);
+    } else {
+      this.callbacks[propertyName] = [callback];
     }
 
     if (this.callbackCount === 0) {
@@ -44,9 +42,9 @@ export class BreezeObjectObserver {
     var callbacks = this.callbacks[propertyName],
         index = callbacks.indexOf(callback);
     if (index === -1) {
-      return; // throw?
+      return;
     }
-    callbacks.splice(callbacks.indexOf(callback), 1);
+    callbacks.splice(index, 1);
     this.callbackCount--;
     if (this.callbackCount === 0) {
       this.obj.entityAspect.propertyChanged.unsubscribe(this.subscription);

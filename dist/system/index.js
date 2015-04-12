@@ -1,23 +1,16 @@
-System.register(["breeze", "./promise-adapter", "aurelia-binding", "./observation-adapter", "aurelia-http-client", "./ajax-adapter"], function (_export) {
+System.register(['breeze', './promise-adapter', 'aurelia-binding', './observation-adapter', 'aurelia-http-client', './ajax-adapter'], function (_export) {
   var breeze, Q, ObjectObservationAdapter, BreezeObservationAdapter, HttpClient;
 
-  _export("install", install);
+  _export('install', install);
 
   function install(aurelia) {
-    // ensure breeze is using the modelLibrary backing store (vs Knockout or Backbone)
-    breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
+    breeze.config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
-    // make breeze use our ES6 Promise based version of Q.
     breeze.config.setQ(Q);
 
-    // provide aurelia with a way to observe breeze properties.
     aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
 
-    // provide the ajax adapter with an HttpClient factory...
-    // the adapter lazily gets the HttpClient instance to enable scenarios where
-    // the aurelia-breeze plugin is installed prior to the HttpClient being
-    // configured in the container.
-    var adapter = breeze.config.initializeAdapterInstance("ajax", "aurelia", true);
+    var adapter = breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
     adapter.setHttpClientFactory(function () {
       return aurelia.container.get(HttpClient);
     });
@@ -25,7 +18,7 @@ System.register(["breeze", "./promise-adapter", "aurelia-binding", "./observatio
 
   return {
     setters: [function (_breeze) {
-      breeze = _breeze["default"];
+      breeze = _breeze['default'];
     }, function (_promiseAdapter) {
       Q = _promiseAdapter.Q;
     }, function (_aureliaBinding) {
@@ -36,7 +29,7 @@ System.register(["breeze", "./promise-adapter", "aurelia-binding", "./observatio
       HttpClient = _aureliaHttpClient.HttpClient;
     }, function (_ajaxAdapter) {}],
     execute: function () {
-      "use strict";
+      'use strict';
     }
   };
 });

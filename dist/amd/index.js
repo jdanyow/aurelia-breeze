@@ -1,37 +1,25 @@
-define(["exports", "breeze", "./promise-adapter", "aurelia-binding", "./observation-adapter", "aurelia-http-client", "./ajax-adapter"], function (exports, _breeze, _promiseAdapter, _aureliaBinding, _observationAdapter, _aureliaHttpClient, _ajaxAdapter) {
-  "use strict";
+define(['exports', 'breeze', './promise-adapter', 'aurelia-binding', './observation-adapter', 'aurelia-http-client', './ajax-adapter'], function (exports, _breeze, _promiseAdapter, _aureliaBinding, _observationAdapter, _aureliaHttpClient, _ajaxAdapter) {
+  'use strict';
 
-  var _interopRequire = function (obj) { return obj && obj.__esModule ? obj["default"] : obj; };
+  var _interopRequire = function (obj) { return obj && obj.__esModule ? obj['default'] : obj; };
 
-  exports.install = install;
-  Object.defineProperty(exports, "__esModule", {
+  Object.defineProperty(exports, '__esModule', {
     value: true
   });
+  exports.install = install;
 
-  var breeze = _interopRequire(_breeze);
-
-  var Q = _promiseAdapter.Q;
-  var ObjectObservationAdapter = _aureliaBinding.ObjectObservationAdapter;
-  var BreezeObservationAdapter = _observationAdapter.BreezeObservationAdapter;
-  var HttpClient = _aureliaHttpClient.HttpClient;
+  var _breeze2 = _interopRequire(_breeze);
 
   function install(aurelia) {
-    // ensure breeze is using the modelLibrary backing store (vs Knockout or Backbone)
-    breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
+    _breeze2.config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
-    // make breeze use our ES6 Promise based version of Q.
-    breeze.config.setQ(Q);
+    _breeze2.config.setQ(_promiseAdapter.Q);
 
-    // provide aurelia with a way to observe breeze properties.
-    aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
+    aurelia.withInstance(_aureliaBinding.ObjectObservationAdapter, new _observationAdapter.BreezeObservationAdapter());
 
-    // provide the ajax adapter with an HttpClient factory...
-    // the adapter lazily gets the HttpClient instance to enable scenarios where
-    // the aurelia-breeze plugin is installed prior to the HttpClient being
-    // configured in the container.
-    var adapter = breeze.config.initializeAdapterInstance("ajax", "aurelia", true);
+    var adapter = _breeze2.config.initializeAdapterInstance('ajax', 'aurelia', true);
     adapter.setHttpClientFactory(function () {
-      return aurelia.container.get(HttpClient);
+      return aurelia.container.get(_aureliaHttpClient.HttpClient);
     });
   }
 });
