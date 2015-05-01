@@ -83,7 +83,7 @@ define(['exports', 'breeze'], function (exports, _breeze) {
 
         request = config.request;
 
-        request.withUri(config.url);
+        request.withUrl(config.url);
 
         method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
         method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);

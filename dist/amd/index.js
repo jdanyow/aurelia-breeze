@@ -6,11 +6,11 @@ define(['exports', 'breeze', './promise-adapter', 'aurelia-binding', './observat
   Object.defineProperty(exports, '__esModule', {
     value: true
   });
-  exports.install = install;
+  exports.configure = configure;
 
   var _breeze2 = _interopRequire(_breeze);
 
-  function install(aurelia) {
+  function configure(aurelia) {
     _breeze2.config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
     _breeze2.config.setQ(_promiseAdapter.Q);

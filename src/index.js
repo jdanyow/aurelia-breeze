@@ -5,7 +5,7 @@ import {BreezeObservationAdapter} from './observation-adapter';
 import {HttpClient} from 'aurelia-http-client';
 import {} from './ajax-adapter';
 
-export function install(aurelia) {
+export function configure(aurelia) {
   // ensure breeze is using the modelLibrary backing store (vs Knockout or Backbone)
   breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
 

@@ -63,7 +63,7 @@ class AjaxAdapter {
     request = config.request;
 
     // uri.
-    request.withUri(config.url);
+    request.withUrl(config.url);
 
     // method.
     method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();

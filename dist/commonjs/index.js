@@ -5,7 +5,7 @@ var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? ob
 Object.defineProperty(exports, '__esModule', {
   value: true
 });
-exports.install = install;
+exports.configure = configure;
 
 var _breeze = require('breeze');
 
@@ -21,7 +21,7 @@ var _HttpClient = require('aurelia-http-client');
 
 require('./ajax-adapter');
 
-function install(aurelia) {
+function configure(aurelia) {
   _breeze2['default'].config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
   _breeze2['default'].config.setQ(_Q.Q);

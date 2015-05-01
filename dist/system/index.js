@@ -1,9 +1,9 @@
 System.register(['breeze', './promise-adapter', 'aurelia-binding', './observation-adapter', 'aurelia-http-client', './ajax-adapter'], function (_export) {
   var breeze, Q, ObjectObservationAdapter, BreezeObservationAdapter, HttpClient;
 
-  _export('install', install);
+  _export('configure', configure);
 
-  function install(aurelia) {
+  function configure(aurelia) {
     breeze.config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
     breeze.config.setQ(Q);
