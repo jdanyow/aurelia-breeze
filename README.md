@@ -53,13 +53,10 @@ This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Au
   ```javascript
   export function configure(aurelia) {
     aurelia.use
-      .defaultBindingLanguage()
-      .defaultResources()
-      .router()
-      .eventAggregator()
+      .standardConfiguration()
       .plugin('aurelia-breeze');  // <--------<<
 
-    aurelia.start().then(a => a.setRoot('app', document.body));
+    aurelia.start().then(a => a.setRoot());
   }
   ```
 4. Now you're ready to use Breeze in your Aurelia application:
