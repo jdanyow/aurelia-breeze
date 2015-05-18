@@ -284,10 +284,11 @@ describe('breeze observation adapter', function() {
       }),
       idObserver = adapter.getObserver(entity, 'id'),
       loginObserver = adapter.getObserver(entity, 'login');
+      entityManager.attachEntity(entity);
     });
 
-    it('is a detached entity', () => {
-      expect(entity.entityAspect.entityState.isDetached()).toBe(true);
+    it('is an attached entity', () => {
+      expect(entity.entityAspect.entityState.isDetached()).toBe(false);
     });
 
     it('gets and sets value', () => {
@@ -403,6 +404,10 @@ describe('breeze observation adapter', function() {
       change = null;
       loginObserver.setValue('baz');
       expect(change && change.newValue === 'baz' && change.oldValue === 'bar').toBe(true);
+
+      change = null;
+      entityManager.rejectChanges();
+      expect(change && change.newValue === 1 && change.oldValue === null).toBe(true);
     });
   });
 });
