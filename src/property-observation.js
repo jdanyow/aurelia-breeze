@@ -27,6 +27,7 @@ export class BreezeObjectObserver {
       this.callbacks[propertyName].push(callback);
     } else {
       this.callbacks[propertyName] = [callback];
+      this.callbacks[propertyName].oldValue = this.obj[propertyName];
     }
 
     if (this.callbackCount === 0) {
@@ -44,26 +45,32 @@ export class BreezeObjectObserver {
     if (index === -1) {
       return;
     }
+
     callbacks.splice(index, 1);
+    if (callbacks.count = 0) {
+      callbacks.oldValue = null;
+      this.callbacks[propertyName] = null;
+    }
+
     this.callbackCount--;
     if (this.callbackCount === 0) {
       this.obj.entityAspect.propertyChanged.unsubscribe(this.subscription);
     }
   }
 
-  getObserver(propertyName){
+  getObserver(propertyName) {
     return this.observers[propertyName]
       || (this.observers[propertyName] = new BreezePropertyObserver(this.obj, propertyName, this.subscribe.bind(this, propertyName)));
   }
 
-  handleChanges(change){
-    var callbacks, i, ii, newValue, key;
+  handleChanges(change) {
+    var callbacks, i, ii, newValue, oldValue, key;
 
     if (change.propertyName === null) {
       callbacks = this.callbacks;
       for (key in callbacks) {
         if (callbacks.hasOwnProperty(key)) {
-          this.handleChanges({ propertyName: key, oldValue: null });
+          this.handleChanges({ propertyName: key });
         }
       }
     } else {
@@ -75,9 +82,16 @@ export class BreezeObjectObserver {
     }
 
     newValue = this.obj[change.propertyName];
+    oldValue = callbacks.oldValue;
+
+    if (newValue === oldValue) {
+      return;
+    }
 
     for (i = 0, ii = callbacks.length; i < ii; i++) {
-      callbacks[i](newValue, change.oldValue);
+      callbacks[i](newValue, oldValue);
     }
+
+    callbacks.oldValue = newValue;
   }
 }

@@ -53,6 +53,7 @@ System.register([], function (_export) {
               this.callbacks[propertyName].push(callback);
             } else {
               this.callbacks[propertyName] = [callback];
+              this.callbacks[propertyName].oldValue = this.obj[propertyName];
             }
 
             if (this.callbackCount === 0) {
@@ -71,7 +72,13 @@ System.register([], function (_export) {
             if (index === -1) {
               return;
             }
+
             callbacks.splice(index, 1);
+            if (callbacks.count = 0) {
+              callbacks.oldValue = null;
+              this.callbacks[propertyName] = null;
+            }
+
             this.callbackCount--;
             if (this.callbackCount === 0) {
               this.obj.entityAspect.propertyChanged.unsubscribe(this.subscription);
@@ -85,13 +92,13 @@ System.register([], function (_export) {
         }, {
           key: "handleChanges",
           value: function handleChanges(change) {
-            var callbacks, i, ii, newValue, key;
+            var callbacks, i, ii, newValue, oldValue, key;
 
             if (change.propertyName === null) {
               callbacks = this.callbacks;
               for (key in callbacks) {
                 if (callbacks.hasOwnProperty(key)) {
-                  this.handleChanges({ propertyName: key, oldValue: null });
+                  this.handleChanges({ propertyName: key });
                 }
               }
             } else {
@@ -103,10 +110,17 @@ System.register([], function (_export) {
             }
 
             newValue = this.obj[change.propertyName];
+            oldValue = callbacks.oldValue;
+
+            if (newValue === oldValue) {
+              return;
+            }
 
             for (i = 0, ii = callbacks.length; i < ii; i++) {
-              callbacks[i](newValue, change.oldValue);
+              callbacks[i](newValue, oldValue);
             }
+
+            callbacks.oldValue = newValue;
           }
         }]);
 
