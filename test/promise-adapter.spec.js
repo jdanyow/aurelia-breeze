@@ -28,7 +28,7 @@ describe('breeze promise adapter', function() {
       expect(resolveCallback).toHaveBeenCalledWith({});
       expect(rejectCallback.calls.any()).toBe(false);
       done();
-    }, 0);
+    }, 50);
   });
 
   it('can reject deferred', (done) => {
@@ -42,7 +42,7 @@ describe('breeze promise adapter', function() {
       expect(resolveCallback.calls.any()).toBe(false);
       expect(rejectCallback).toHaveBeenCalledWith({});
       done();
-    }, 0);
+    }, 50);
   });
 
   it('can resolve', (done) => {
@@ -52,7 +52,7 @@ describe('breeze promise adapter', function() {
       expect(resolveCallback).toHaveBeenCalledWith({});
       expect(rejectCallback.calls.any()).toBe(false);
       done();
-    }, 0);
+    }, 50);
   });
 
   it('can reject', (done) => {
@@ -62,6 +62,6 @@ describe('breeze promise adapter', function() {
       expect(resolveCallback.calls.any()).toBe(false);
       expect(rejectCallback).toHaveBeenCalledWith({});
       done();
-    }, 0);
+    }, 50);
   });
 });

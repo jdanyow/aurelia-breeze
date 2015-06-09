@@ -26,12 +26,13 @@ export default function getEntityManager() {
       shortName: 'Member',
 
       dataProperties: {
-        id:          { dataType: breeze.DataType.Int64, isPartOfKey: true },
+        memberId:    { dataType: breeze.DataType.Int64, isPartOfKey: true },
+        id:          { dataType: breeze.DataType.Int64 },
         login:       { /* string type by default */ },
         html_url:    { }
       },
       navigationProperties: {
-        repositories: { entityTypeName: 'Repository', associationName: 'Member_Repository', foreignKeyNames: ['id'], isScalar: false }
+        repositories: { entityTypeName: 'Repository', associationName: 'Member_Repository', foreignKeyNames: ['memberId'], isScalar: false }
       }
     },
 

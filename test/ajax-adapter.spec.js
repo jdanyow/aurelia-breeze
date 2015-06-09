@@ -2,6 +2,23 @@ import breeze from 'breeze';
 import getEntityManager from './breeze-setup';
 import {HttpClient} from 'aurelia-http-client';
 
+if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
+  var CustomEvent = function(event, params) {
+    var params = params || {
+      bubbles: false,
+      cancelable: false,
+      detail: undefined
+    };
+
+    var evt = document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    return evt;
+  };
+
+  CustomEvent.prototype = window.Event.prototype;
+  window.CustomEvent = CustomEvent;
+}
+
 describe('ajax adapter', function() {
   var adapter, entityManager;
 
@@ -26,7 +43,7 @@ describe('ajax adapter', function() {
     adapter.initialize();
   });
 
-  it('can GET', (done) => {
+  it('can GET', done => {
     var responseData = JSON.stringify({ donald: 'draper' }),
       url = 'https://foo.com/bars',
       contentType = 'application/json',
@@ -56,28 +73,30 @@ describe('ajax adapter', function() {
 
     adapter.ajax(config);
 
-    request = jasmine.Ajax.requests.mostRecent();
-    expect(request.url).toBe(url + '?a=b&c=d&e=1');
-    expect(request.method).toBe(httpMethod);
-    expect(request.requestHeaders['Authorization']).toBe('bearer token');
-
-    request.respondWith({
-      status: 200,
-      contentType: contentType,
-      responseText: responseData,
-      responseHeaders: {
-        'rate-limit': '999'
-      }
-    });
-
     setTimeout(() => {
-      expect(config.success).toHaveBeenCalled();
-      expect(config.error.calls.any()).toBe(false);
-      done();
-    }, 0);
+      request = jasmine.Ajax.requests.mostRecent();
+      expect(request.url).toBe(url + '?a=b&c=d&e=1');
+      expect(request.method).toBe(httpMethod);
+      expect(request.requestHeaders['Authorization']).toBe('bearer token');
+
+      request.respondWith({
+        status: 200,
+        contentType: contentType,
+        responseText: responseData,
+        responseHeaders: {
+          'rate-limit': '999'
+        }
+      });
+
+      setTimeout(() => {
+        expect(config.success).toHaveBeenCalled();
+        expect(config.error.calls.any()).toBe(false);
+        done();
+      }, 50);
+    }, 50);
   });
 
-  it('can POST', (done) => {
+  it('can POST', done => {
     var requestData = JSON.stringify({ don: 'draper' }),
       responseData = JSON.stringify({ roger: 'sterling' }),
       url = 'https://foo.com/SaveChanges',
@@ -105,30 +124,32 @@ describe('ajax adapter', function() {
 
     adapter.ajax(config);
 
-    request = jasmine.Ajax.requests.mostRecent();
-    expect(request.url).toBe(url);
-    expect(request.method).toBe(httpMethod);
-    expect(JSON.stringify(request.data())).toEqual(requestData);
-    expect(request.requestHeaders['Authorization']).toBe('bearer token');
-    expect(request.requestHeaders['Content-Type']).toBe(contentType);
-
-    request.respondWith({
-      status: 200,
-      contentType: contentType,
-      responseText: responseData,
-      responseHeaders: {
-        'rate-limit': '999'
-      }
-    });
-
     setTimeout(() => {
-      expect(config.success).toHaveBeenCalled();
-      expect(config.error.calls.any()).toBe(false);
-      done();
-    }, 0);
+      request = jasmine.Ajax.requests.mostRecent();
+      expect(request.url).toBe(url);
+      expect(request.method).toBe(httpMethod);
+      expect(JSON.stringify(request.data())).toEqual(requestData);
+      expect(request.requestHeaders['Authorization']).toBe('bearer token');
+      expect(request.requestHeaders['Content-Type']).toBe(contentType);
+
+      request.respondWith({
+        status: 200,
+        contentType: contentType,
+        responseText: responseData,
+        responseHeaders: {
+          'rate-limit': '999'
+        }
+      });
+
+      setTimeout(() => {
+        expect(config.success).toHaveBeenCalled();
+        expect(config.error.calls.any()).toBe(false);
+        done();
+      }, 50);
+    }, 50);
   });
 
-  it('can intercept', () => {
+  it('can intercept', done => {
     var config = {
         type: 'GET',
         url: 'https://foo.com/bars',
@@ -147,17 +168,21 @@ describe('ajax adapter', function() {
 
     adapter.ajax(config);
 
-    request = jasmine.Ajax.requests.mostRecent();
+    setTimeout(() => {
+      request = jasmine.Ajax.requests.mostRecent();
 
-    expect(adapter.requestInterceptor).toHaveBeenCalled();
-    expect(request.requestHeaders['intercepted']).toBe('true');
+      expect(adapter.requestInterceptor).toHaveBeenCalled();
+      expect(request.requestHeaders['intercepted']).toBe('true');
 
-    request.respondWith({
-      status: 200
-    });
+      request.respondWith({
+        status: 200,
+        responseText: '{}'
+      });
+      done();
+    }, 50);
   });
 
-  it('handles null responseText', (done) => {
+  it('handles null responseText', done => {
     var config = {
         type: 'GET',
         url: 'https://foo.com/bars',
@@ -174,17 +199,19 @@ describe('ajax adapter', function() {
 
     adapter.ajax(config);
 
-    request = jasmine.Ajax.requests.mostRecent();
-
-    request.respondWith({
-      status: 200,
-      responseText: 'null'
-    });
-
     setTimeout(() => {
-      expect(config.success).toHaveBeenCalled();
-      expect(config.error.calls.any()).toBe(false);
-      done();
-    }, 0);
+      request = jasmine.Ajax.requests.mostRecent();
+
+      request.respondWith({
+        status: 200,
+        responseText: 'null'
+      });
+
+      setTimeout(() => {
+        expect(config.success).toHaveBeenCalled();
+        expect(config.error.calls.any()).toBe(false);
+        done();
+      }, 50);
+    }, 50);
   });
 });
