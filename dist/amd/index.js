@@ -3,9 +3,7 @@ define(['exports', 'breeze', './promise-adapter', 'aurelia-binding', './observat
 
   var _interopRequire = function (obj) { return obj && obj.__esModule ? obj['default'] : obj; };
 
-  Object.defineProperty(exports, '__esModule', {
-    value: true
-  });
+  exports.__esModule = true;
   exports.configure = configure;
 
   var _breeze2 = _interopRequire(_breeze);

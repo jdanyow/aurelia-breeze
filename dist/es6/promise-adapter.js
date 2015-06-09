@@ -4,11 +4,11 @@ export class Q {
   }
 
   static resolve(data) {
-    return new Promise(function(resolve, reject) { resolve(data); });
+    return Promise.resolve(data);
   }
 
   static reject(reason) {
-    return new Promise(function(resolve, reject) { reject(reason); });
+    return Promise.reject(reason);
   }
 }
 

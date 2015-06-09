@@ -2,37 +2,24 @@
 
 var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+exports.__esModule = true;
 
 var Q = (function () {
   function Q() {
     _classCallCheck(this, Q);
   }
 
-  _createClass(Q, null, [{
-    key: "defer",
-    value: function defer() {
-      return new Deferred();
-    }
-  }, {
-    key: "resolve",
-    value: function resolve(data) {
-      return new Promise(function (resolve, reject) {
-        resolve(data);
-      });
-    }
-  }, {
-    key: "reject",
-    value: function reject(reason) {
-      return new Promise(function (resolve, reject) {
-        reject(reason);
-      });
-    }
-  }]);
+  Q.defer = function defer() {
+    return new Deferred();
+  };
+
+  Q.resolve = function resolve(data) {
+    return Promise.resolve(data);
+  };
+
+  Q.reject = function reject(reason) {
+    return Promise.reject(reason);
+  };
 
   return Q;
 })();

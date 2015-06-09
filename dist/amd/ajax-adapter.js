@@ -3,9 +3,9 @@ define(['exports', 'breeze'], function (exports, _breeze) {
 
   var _interopRequire = function (obj) { return obj && obj.__esModule ? obj['default'] : obj; };
 
-  var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
   var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+  var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
 
   var _breeze2 = _interopRequire(_breeze);
 
@@ -21,14 +21,11 @@ define(['exports', 'breeze'], function (exports, _breeze) {
       this.headers = aureliaResponse.headers;
     }
 
-    _createClass(HttpResponse, [{
-      key: 'getHeader',
-      value: function getHeader(headerName) {
-        if (headerName === null || headerName === undefined || headerName === '') {
-          return this.headers.headers;
-        }return this.headers.get(headerName);
-      }
-    }]);
+    HttpResponse.prototype.getHeader = function getHeader(headerName) {
+      if (headerName === null || headerName === undefined || headerName === '') {
+        return this.headers.headers;
+      }return this.headers.get(headerName);
+    };
 
     return HttpResponse;
   })();
@@ -42,73 +39,70 @@ define(['exports', 'breeze'], function (exports, _breeze) {
       this.requestInterceptor = null;
     }
 
-    _createClass(AjaxAdapter, [{
-      key: 'setHttpClientFactory',
-      value: function setHttpClientFactory(createHttpClient) {
-        this.createHttpClient = createHttpClient;
+    AjaxAdapter.prototype.setHttpClientFactory = function setHttpClientFactory(createHttpClient) {
+      this.createHttpClient = createHttpClient;
+    };
+
+    AjaxAdapter.prototype.initialize = function initialize() {};
+
+    AjaxAdapter.prototype.ajax = function ajax(config) {
+      var requestInfo, header, method, request;
+
+      requestInfo = {
+        adapter: this,
+        config: extend({}, config),
+        zConfig: config,
+        success: config.success,
+        error: config.error
+      };
+      requestInfo.config.request = this.httpClient.createRequest();
+      requestInfo.config.headers = extend(extend({}, this.defaultHeaders), config.headers);
+
+      if (_breeze2.core.isFunction(this.requestInterceptor)) {
+        this.requestInterceptor(requestInfo);
+        if (this.requestInterceptor.oneTime) {
+          this.requestInterceptor = null;
+        }
+        if (!requestInfo.config) {
+          return;
+        }
       }
-    }, {
+      config = requestInfo.config;
+
+      request = config.request;
+
+      request.withUrl(config.url);
+
+      method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
+      method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);
+      request[method]();
+
+      request.withParams(config.params);
+
+      if (config.contentType) {
+        request.withHeader('Content-Type', config.contentType);
+      }
+      for (header in config.headers) {
+        if (config.headers.hasOwnProperty(header)) {
+          request.withHeader(header, config.headers[header]);
+        }
+      }
+
+      if (config.hasOwnProperty('data')) {
+        request.withContent(config.data);
+      }
+
+      request.send().then(function (r) {
+        return requestInfo.success(new HttpResponse(r, requestInfo.zConfig));
+      }, function (r) {
+        return requestInfo.error(new HttpResponse(r, requestInfo.zConfig));
+      });
+    };
+
+    _createClass(AjaxAdapter, [{
       key: 'httpClient',
       get: function () {
         return this.client || (this.client = this.createHttpClient());
-      }
-    }, {
-      key: 'initialize',
-      value: function initialize() {}
-    }, {
-      key: 'ajax',
-      value: function ajax(config) {
-        var requestInfo, header, method, request;
-
-        requestInfo = {
-          adapter: this,
-          config: extend({}, config),
-          zConfig: config,
-          success: config.success,
-          error: config.error
-        };
-        requestInfo.config.request = this.httpClient.createRequest();
-        requestInfo.config.headers = extend(extend({}, this.defaultHeaders), config.headers);
-
-        if (_breeze2.core.isFunction(this.requestInterceptor)) {
-          this.requestInterceptor(requestInfo);
-          if (this.requestInterceptor.oneTime) {
-            this.requestInterceptor = null;
-          }
-          if (!requestInfo.config) {
-            return;
-          }
-        }
-        config = requestInfo.config;
-
-        request = config.request;
-
-        request.withUrl(config.url);
-
-        method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
-        method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);
-        request[method]();
-
-        request.withParams(config.params);
-
-        if (config.contentType) {
-          request.withHeader('Content-Type', config.contentType);
-        }
-        for (header in config.headers) {
-          if (config.headers.hasOwnProperty(header)) {
-            request.withHeader(header, config.headers[header]);
-          }
-        }
-
-        if (config.hasOwnProperty('data')) {
-          request.withContent(config.data);
-        }
-
-        request.send().then(function (r) {
-          return requestInfo.success(new HttpResponse(r, requestInfo.zConfig));
-        }, function (r) {
-          return requestInfo.error(new HttpResponse(r, requestInfo.zConfig));
-        });
       }
     }]);
 
