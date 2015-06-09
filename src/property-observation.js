@@ -82,7 +82,7 @@ export class BreezeObjectObserver {
     }
 
     newValue = this.obj[change.propertyName];
-    oldValue = callbacks.oldValue;
+    oldValue = 'oldValue' in change ? change.oldValue : callbacks.oldValue;
 
     if (newValue === oldValue) {
       return;
