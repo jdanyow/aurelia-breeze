@@ -1,6 +1,6 @@
 {
   "name": "aurelia-breeze",
-  "version": "0.4.0",
+  "version": "0.7.0",
   "description": "A Breeze plugin for Aurelia.",
   "keywords": [
     "aurelia",
@@ -20,13 +20,13 @@
   },
   "jspm": {
     "main": "index",
-    "format": "register",
+    "format": "amd",
     "directories": {
-      "lib": "dist/system"
+      "lib": "dist/amd"
     },
     "dependencies": {
-      "aurelia-binding": "github:aurelia/binding@^0.7.1",
-      "aurelia-http-client": "github:aurelia/http-client@^0.9.1",
+      "aurelia-binding": "github:aurelia/binding@^0.8.0",
+      "aurelia-http-client": "github:aurelia/http-client@^0.10.0",
       "breeze": "npm:breeze-client@^1.5.5"
     },
     "devDependencies": {
@@ -41,7 +41,7 @@
     "del": "^1.1.0",
     "gulp": "^3.8.10",
     "gulp-babel": "^5.1.0",
-    "gulp-bump": "^0.1.11",
+    "gulp-bump": "^0.3.1",
     "gulp-jshint": "^1.9.0",
     "gulp-yuidoc": "^0.1.2",
     "jasmine-core": "^2.1.3",
