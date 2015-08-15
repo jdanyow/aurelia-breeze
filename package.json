@@ -25,8 +25,8 @@
       "lib": "dist/amd"
     },
     "dependencies": {
-      "aurelia-binding": "github:aurelia/binding@^0.8.0",
-      "aurelia-http-client": "github:aurelia/http-client@^0.10.0",
+      "aurelia-binding": "github:aurelia/binding@^0.8.6",
+      "aurelia-http-client": "github:aurelia/http-client@^0.10.3",
       "breeze": "npm:breeze-client@^1.5.5"
     },
     "devDependencies": {
@@ -53,7 +53,7 @@
     "karma-ie-launcher": "^0.1.5",
     "karma-jasmine": "^0.3.5",
     "karma-jasmine-ajax": "^0.1.12",
-    "karma-jspm": "^1.1.4",
+    "karma-jspm": "^2.0.1-beta.2",
     "object.assign": "^1.0.3",
     "require-dir": "^0.1.0",
     "run-sequence": "^1.0.2",
