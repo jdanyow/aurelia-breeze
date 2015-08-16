@@ -1,18 +1,20 @@
 System.register(['breeze', './promise-adapter', 'aurelia-binding', './observation-adapter', 'aurelia-http-client', './ajax-adapter'], function (_export) {
+  'use strict';
+
   var breeze, Q, ObjectObservationAdapter, BreezeObservationAdapter, HttpClient;
 
   _export('configure', configure);
 
-  function configure(aurelia) {
+  function configure(frameworkConfig) {
     breeze.config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
     breeze.config.setQ(Q);
 
-    aurelia.withInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
+    frameworkConfig.instance(ObjectObservationAdapter, new BreezeObservationAdapter());
 
     var adapter = breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
     adapter.setHttpClientFactory(function () {
-      return aurelia.container.get(HttpClient);
+      return frameworkConfig.container.get(HttpClient);
     });
   }
 
@@ -28,8 +30,6 @@ System.register(['breeze', './promise-adapter', 'aurelia-binding', './observatio
     }, function (_aureliaHttpClient) {
       HttpClient = _aureliaHttpClient.HttpClient;
     }, function (_ajaxAdapter) {}],
-    execute: function () {
-      'use strict';
-    }
+    execute: function () {}
   };
 });

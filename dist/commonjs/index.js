@@ -1,33 +1,33 @@
 'use strict';
 
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
 exports.__esModule = true;
 exports.configure = configure;
 
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
 var _breeze = require('breeze');
 
-var _breeze2 = _interopRequireWildcard(_breeze);
+var _breeze2 = _interopRequireDefault(_breeze);
 
-var _Q = require('./promise-adapter');
+var _promiseAdapter = require('./promise-adapter');
 
-var _ObjectObservationAdapter = require('aurelia-binding');
+var _aureliaBinding = require('aurelia-binding');
 
-var _BreezeObservationAdapter = require('./observation-adapter');
+var _observationAdapter = require('./observation-adapter');
 
-var _HttpClient = require('aurelia-http-client');
+var _aureliaHttpClient = require('aurelia-http-client');
 
 require('./ajax-adapter');
 
-function configure(aurelia) {
+function configure(frameworkConfig) {
   _breeze2['default'].config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
-  _breeze2['default'].config.setQ(_Q.Q);
+  _breeze2['default'].config.setQ(_promiseAdapter.Q);
 
-  aurelia.withInstance(_ObjectObservationAdapter.ObjectObservationAdapter, new _BreezeObservationAdapter.BreezeObservationAdapter());
+  frameworkConfig.instance(_aureliaBinding.ObjectObservationAdapter, new _observationAdapter.BreezeObservationAdapter());
 
   var adapter = _breeze2['default'].config.initializeAdapterInstance('ajax', 'aurelia', true);
   adapter.setHttpClientFactory(function () {
-    return aurelia.container.get(_HttpClient.HttpClient);
+    return frameworkConfig.container.get(_aureliaHttpClient.HttpClient);
   });
 }

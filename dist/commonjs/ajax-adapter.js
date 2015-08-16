@@ -1,14 +1,14 @@
 'use strict';
 
-var _interopRequireWildcard = function (obj) { return obj && obj.__esModule ? obj : { 'default': obj }; };
-
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var _breeze = require('breeze');
 
-var _breeze2 = _interopRequireWildcard(_breeze);
+var _breeze2 = _interopRequireDefault(_breeze);
 
 var extend = _breeze2['default'].core.extend;
 
@@ -23,9 +23,8 @@ var HttpResponse = (function () {
   }
 
   HttpResponse.prototype.getHeader = function getHeader(headerName) {
-    if (headerName === null || headerName === undefined || headerName === '') {
-      return this.headers.headers;
-    }return this.headers.get(headerName);
+    if (headerName === null || headerName === undefined || headerName === '') return this.headers.headers;
+    return this.headers.get(headerName);
   };
 
   return HttpResponse;
@@ -64,9 +63,7 @@ var AjaxAdapter = (function () {
       if (this.requestInterceptor.oneTime) {
         this.requestInterceptor = null;
       }
-      if (!requestInfo.config) {
-        return;
-      }
+      if (!requestInfo.config) return;
     }
     config = requestInfo.config;
 
@@ -102,7 +99,7 @@ var AjaxAdapter = (function () {
 
   _createClass(AjaxAdapter, [{
     key: 'httpClient',
-    get: function () {
+    get: function get() {
       return this.client || (this.client = this.createHttpClient());
     }
   }]);

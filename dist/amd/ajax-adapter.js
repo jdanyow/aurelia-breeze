@@ -1,15 +1,15 @@
 define(['exports', 'breeze'], function (exports, _breeze) {
   'use strict';
 
-  var _interopRequire = function (obj) { return obj && obj.__esModule ? obj['default'] : obj; };
-
   var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-  var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-  var _breeze2 = _interopRequire(_breeze);
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-  var extend = _breeze2.core.extend;
+  var _breeze2 = _interopRequireDefault(_breeze);
+
+  var extend = _breeze2['default'].core.extend;
 
   var HttpResponse = (function () {
     function HttpResponse(aureliaResponse, config) {
@@ -22,9 +22,8 @@ define(['exports', 'breeze'], function (exports, _breeze) {
     }
 
     HttpResponse.prototype.getHeader = function getHeader(headerName) {
-      if (headerName === null || headerName === undefined || headerName === '') {
-        return this.headers.headers;
-      }return this.headers.get(headerName);
+      if (headerName === null || headerName === undefined || headerName === '') return this.headers.headers;
+      return this.headers.get(headerName);
     };
 
     return HttpResponse;
@@ -58,14 +57,12 @@ define(['exports', 'breeze'], function (exports, _breeze) {
       requestInfo.config.request = this.httpClient.createRequest();
       requestInfo.config.headers = extend(extend({}, this.defaultHeaders), config.headers);
 
-      if (_breeze2.core.isFunction(this.requestInterceptor)) {
+      if (_breeze2['default'].core.isFunction(this.requestInterceptor)) {
         this.requestInterceptor(requestInfo);
         if (this.requestInterceptor.oneTime) {
           this.requestInterceptor = null;
         }
-        if (!requestInfo.config) {
-          return;
-        }
+        if (!requestInfo.config) return;
       }
       config = requestInfo.config;
 
@@ -101,7 +98,7 @@ define(['exports', 'breeze'], function (exports, _breeze) {
 
     _createClass(AjaxAdapter, [{
       key: 'httpClient',
-      get: function () {
+      get: function get() {
         return this.client || (this.client = this.createHttpClient());
       }
     }]);
@@ -109,5 +106,5 @@ define(['exports', 'breeze'], function (exports, _breeze) {
     return AjaxAdapter;
   })();
 
-  _breeze2.config.registerAdapter('ajax', AjaxAdapter);
+  _breeze2['default'].config.registerAdapter('ajax', AjaxAdapter);
 });

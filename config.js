@@ -1,21 +1,19 @@
 System.config({
-  "defaultJSExtensions": true,
-  "transpiler": "babel",
-  "babelOptions": {
+  defaultJSExtensions: true,
+  transpiler: "babel",
+  babelOptions: {
     "optional": [
       "runtime",
       "es7.decorators"
     ]
   },
-  "paths": {
+  paths: {
     "github:*": "jspm_packages/github/*",
     "aurelia-breeze/*": "dist/*.js",
     "npm:*": "jspm_packages/npm/*"
-  }
-});
+  },
 
-System.config({
-  "map": {
+  map: {
     "aurelia-binding": "github:aurelia/binding@0.8.6",
     "aurelia-http-client": "github:aurelia/http-client@0.10.3",
     "babel": "npm:babel-core@5.6.15",
@@ -53,4 +51,3 @@ System.config({
     }
   }
 });
-

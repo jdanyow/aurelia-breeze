@@ -1,17 +1,17 @@
 System.register(['breeze'], function (_export) {
-  var breeze, _createClass, _classCallCheck, extend, HttpResponse, AjaxAdapter;
+  'use strict';
+
+  var breeze, extend, HttpResponse, AjaxAdapter;
+
+  var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
   return {
     setters: [function (_breeze) {
       breeze = _breeze['default'];
     }],
     execute: function () {
-      'use strict';
-
-      _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-      _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
       extend = breeze.core.extend;
 
       HttpResponse = (function () {
@@ -25,9 +25,8 @@ System.register(['breeze'], function (_export) {
         }
 
         HttpResponse.prototype.getHeader = function getHeader(headerName) {
-          if (headerName === null || headerName === undefined || headerName === '') {
-            return this.headers.headers;
-          }return this.headers.get(headerName);
+          if (headerName === null || headerName === undefined || headerName === '') return this.headers.headers;
+          return this.headers.get(headerName);
         };
 
         return HttpResponse;
@@ -66,9 +65,7 @@ System.register(['breeze'], function (_export) {
             if (this.requestInterceptor.oneTime) {
               this.requestInterceptor = null;
             }
-            if (!requestInfo.config) {
-              return;
-            }
+            if (!requestInfo.config) return;
           }
           config = requestInfo.config;
 
@@ -104,7 +101,7 @@ System.register(['breeze'], function (_export) {
 
         _createClass(AjaxAdapter, [{
           key: 'httpClient',
-          get: function () {
+          get: function get() {
             return this.client || (this.client = this.createHttpClient());
           }
         }]);

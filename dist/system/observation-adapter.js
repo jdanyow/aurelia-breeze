@@ -1,5 +1,9 @@
 System.register(["./property-observation"], function (_export) {
-  var BreezeObjectObserver, BreezePropertyObserver, _classCallCheck, BreezeObservationAdapter;
+  "use strict";
+
+  var BreezeObjectObserver, BreezePropertyObserver, BreezeObservationAdapter;
+
+  function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
   function createObserverLookup(obj) {
     var value = new BreezeObjectObserver(obj);
@@ -43,10 +47,6 @@ System.register(["./property-observation"], function (_export) {
       BreezePropertyObserver = _propertyObservation.BreezePropertyObserver;
     }],
     execute: function () {
-      "use strict";
-
-      _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } };
-
       BreezeObservationAdapter = (function () {
         function BreezeObservationAdapter() {
           _classCallCheck(this, BreezeObservationAdapter);
