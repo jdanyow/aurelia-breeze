@@ -24,7 +24,7 @@ function configure(frameworkConfig) {
 
   _breeze2['default'].config.setQ(_promiseAdapter.Q);
 
-  frameworkConfig.instance(_aureliaBinding.ObjectObservationAdapter, new _observationAdapter.BreezeObservationAdapter());
+  frameworkConfig.container.registerInstance(_aureliaBinding.ObjectObservationAdapter, new _observationAdapter.BreezeObservationAdapter());
 
   var adapter = _breeze2['default'].config.initializeAdapterInstance('ajax', 'aurelia', true);
   adapter.setHttpClientFactory(function () {

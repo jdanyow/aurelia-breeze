@@ -10,7 +10,7 @@ System.register(['breeze', './promise-adapter', 'aurelia-binding', './observatio
 
     breeze.config.setQ(Q);
 
-    frameworkConfig.instance(ObjectObservationAdapter, new BreezeObservationAdapter());
+    frameworkConfig.container.registerInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
 
     var adapter = breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
     adapter.setHttpClientFactory(function () {

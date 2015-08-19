@@ -13,7 +13,7 @@ export function configure(frameworkConfig) {
   breeze.config.setQ(Q);
 
   // provide aurelia with a way to observe breeze properties.
-  frameworkConfig.instance(ObjectObservationAdapter, new BreezeObservationAdapter());
+  frameworkConfig.container.registerInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
 
   // provide the ajax adapter with an HttpClient factory...
   // the adapter lazily gets the HttpClient instance to enable scenarios where
