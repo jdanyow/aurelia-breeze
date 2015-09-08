@@ -9,7 +9,7 @@ define(['exports', 'breeze', './promise-adapter', 'aurelia-binding', './observat
   var _breeze2 = _interopRequireDefault(_breeze);
 
   function configure(frameworkConfig) {
-    _breeze2['default'].config.initializeAdapterInstance('modelLibrary', 'backingStore');
+    _breeze2['default'].config.initializeAdapterInstance("modelLibrary", "backingStore");
 
     _breeze2['default'].config.setQ(_promiseAdapter.Q);
 

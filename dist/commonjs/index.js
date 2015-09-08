@@ -20,7 +20,7 @@ var _aureliaHttpClient = require('aurelia-http-client');
 require('./ajax-adapter');
 
 function configure(frameworkConfig) {
-  _breeze2['default'].config.initializeAdapterInstance('modelLibrary', 'backingStore');
+  _breeze2['default'].config.initializeAdapterInstance("modelLibrary", "backingStore");
 
   _breeze2['default'].config.setQ(_promiseAdapter.Q);
 

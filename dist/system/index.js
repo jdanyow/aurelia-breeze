@@ -6,7 +6,7 @@ System.register(['breeze', './promise-adapter', 'aurelia-binding', './observatio
   _export('configure', configure);
 
   function configure(frameworkConfig) {
-    breeze.config.initializeAdapterInstance('modelLibrary', 'backingStore');
+    breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
 
     breeze.config.setQ(Q);
 

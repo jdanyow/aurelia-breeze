@@ -1,6 +1,6 @@
 {
   "name": "aurelia-breeze",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "A Breeze plugin for Aurelia.",
   "keywords": [
     "aurelia",
@@ -25,8 +25,8 @@
       "lib": "dist/amd"
     },
     "dependencies": {
-      "aurelia-binding": "github:aurelia/binding@^0.8.6",
-      "aurelia-http-client": "github:aurelia/http-client@^0.10.3",
+      "aurelia-binding": "github:aurelia/binding@^0.9.0",
+      "aurelia-http-client": "github:aurelia/http-client@^0.11.0",
       "breeze": "npm:breeze-client@^1.5.5"
     },
     "devDependencies": {

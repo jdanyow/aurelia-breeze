@@ -107,4 +107,4 @@ var AjaxAdapter = (function () {
   return AjaxAdapter;
 })();
 
-_breeze2['default'].config.registerAdapter('ajax', AjaxAdapter);
+_breeze2['default'].config.registerAdapter("ajax", AjaxAdapter);

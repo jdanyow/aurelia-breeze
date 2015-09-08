@@ -109,7 +109,7 @@ System.register(['breeze'], function (_export) {
         return AjaxAdapter;
       })();
 
-      breeze.config.registerAdapter('ajax', AjaxAdapter);
+      breeze.config.registerAdapter("ajax", AjaxAdapter);
     }
   };
 });

@@ -106,5 +106,5 @@ define(['exports', 'breeze'], function (exports, _breeze) {
     return AjaxAdapter;
   })();
 
-  _breeze2['default'].config.registerAdapter('ajax', AjaxAdapter);
+  _breeze2['default'].config.registerAdapter("ajax", AjaxAdapter);
 });
