@@ -1,8 +1,8 @@
+import {ObserverLocator} from 'aurelia-binding';
+import {HttpClient} from 'aurelia-http-client';
 import breeze from 'breeze';
 import {Q} from './promise-adapter';
-import {ObjectObservationAdapter} from 'aurelia-binding';
 import {BreezeObservationAdapter} from './observation-adapter';
-import {HttpClient} from 'aurelia-http-client';
 import {} from './ajax-adapter';
 
 export function configure(frameworkConfig) {
@@ -13,7 +13,7 @@ export function configure(frameworkConfig) {
   breeze.config.setQ(Q);
 
   // provide aurelia with a way to observe breeze properties.
-  frameworkConfig.container.registerInstance(ObjectObservationAdapter, new BreezeObservationAdapter());
+  frameworkConfig.container.get(ObserverLocator).addAdapter(new BreezeObservationAdapter());
 
   // provide the ajax adapter with an HttpClient factory...
   // the adapter lazily gets the HttpClient instance to enable scenarios where

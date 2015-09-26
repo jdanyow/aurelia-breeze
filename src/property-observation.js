@@ -1,97 +1,83 @@
+import {subscriberCollection} from 'aurelia-binding';
+
+@subscriberCollection()
 export class BreezePropertyObserver {
-  constructor(obj, propertyName, subscribe){
+  constructor(obj, propertyName) {
     this.obj = obj;
     this.propertyName = propertyName;
-    this.subscribe = subscribe;
   }
 
-  getValue(){
+  getValue() {
     return this.obj[this.propertyName];
   }
 
-  setValue(newValue){
+  setValue(newValue) {
     this.obj[this.propertyName] = newValue;
+  }
+
+  subscribe(context, callable) {
+    if (this.addSubscriber(context, callable)) {
+      this.oldValue = this.obj[this.propertyName];
+      this.obj.__breezeObserver__.subscriberAdded();
+    }
+  }
+
+  unsubscribe(context, callable) {
+    if (this.removeSubscriber(context, callable)) {
+      this.obj.__breezeObserver__.subscriberRemoved();
+    }
   }
 }
 
+function handleChange(change) {
+  let object = change.entity;
+  let propertyName = change.propertyName;
+  let objectObserver = object.__breezeObserver__;
+  if (propertyName === null) {
+    let observers = objectObserver.observers;
+    for (propertyName in observers) {
+      if (observers.hasOwnProperty(propertyName)) {
+        change.propertyName = propertyName;
+        handleChange(change);
+      }
+    }
+    return;
+  }
+
+  let observer = objectObserver.observers[propertyName];
+  let newValue = object[propertyName];
+  if (!observer || newValue === observer.oldValue) {
+    return;
+  }
+  observer.callSubscribers(newValue, observer.oldValue);
+  observer.oldValue = newValue;
+}
+
 export class BreezeObjectObserver {
-  constructor(obj){
+  constructor(obj) {
     this.obj = obj;
     this.observers = {};
-    this.callbacks = {};
-    this.callbackCount = 0;
+    this.subscribers = 0;
   }
 
-  subscribe(propertyName, callback){
-    if (this.callbacks[propertyName]) {
-      this.callbacks[propertyName].push(callback);
-    } else {
-      this.callbacks[propertyName] = [callback];
-      this.callbacks[propertyName].oldValue = this.obj[propertyName];
+  subscriberAdded() {
+    if (this.subscribers === 0) {
+      this.subscription = this.obj.entityAspect.propertyChanged.subscribe(handleChange);
     }
 
-    if (this.callbackCount === 0) {
-      this.subscription = this.obj.entityAspect.propertyChanged.subscribe(this.handleChanges.bind(this));
-    }
-
-    this.callbackCount++;
-
-    return this.unsubscribe.bind(this, propertyName, callback);
+    this.subscribers++;
   }
 
-  unsubscribe(propertyName, callback) {
-    var callbacks = this.callbacks[propertyName],
-        index = callbacks.indexOf(callback);
-    if (index === -1) {
-      return;
-    }
+  subscriberRemoved(propertyName, callback) {
+    this.subscribers--;
 
-    callbacks.splice(index, 1);
-    if (callbacks.count = 0) {
-      callbacks.oldValue = null;
-      this.callbacks[propertyName] = null;
-    }
-
-    this.callbackCount--;
-    if (this.callbackCount === 0) {
+    if (this.subscribers === 0) {
       this.obj.entityAspect.propertyChanged.unsubscribe(this.subscription);
     }
   }
 
   getObserver(propertyName) {
     return this.observers[propertyName]
-      || (this.observers[propertyName] = new BreezePropertyObserver(this.obj, propertyName, this.subscribe.bind(this, propertyName)));
-  }
-
-  handleChanges(change) {
-    var callbacks, i, ii, newValue, oldValue, key;
-
-    if (change.propertyName === null) {
-      callbacks = this.callbacks;
-      for (key in callbacks) {
-        if (callbacks.hasOwnProperty(key)) {
-          this.handleChanges({ propertyName: key });
-        }
-      }
-    } else {
-      callbacks = this.callbacks[change.propertyName];
-    }
-
-    if (!callbacks) {
-      return;
-    }
-
-    newValue = this.obj[change.propertyName];
-    oldValue = 'oldValue' in change ? change.oldValue : callbacks.oldValue;
-
-    if (newValue === oldValue) {
-      return;
-    }
-
-    for (i = 0, ii = callbacks.length; i < ii; i++) {
-      callbacks[i](newValue, oldValue);
-    }
-
-    callbacks.oldValue = newValue;
+      || (this.observers[propertyName] = new BreezePropertyObserver(this.obj, propertyName));
   }
 }

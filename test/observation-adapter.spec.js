@@ -21,9 +21,9 @@ describe('breeze observation adapter', function() {
 
   it('ignores entity properties that are not observable', () => {
     var adapter = new BreezeObservationAdapter(),
-      entity = memberType.createEntity();
-    expect(adapter.handlesProperty(entity, 'entityAspect')).toBe(false);
-    expect(adapter.handlesProperty(entity, 'entityType')).toBe(false);
+        entity = memberType.createEntity();
+    expect(adapter.getObserver(entity, 'entityAspect')).toBe(null);
+    expect(adapter.getObserver(entity, 'entityType')).toBe(null);
   });
 
   it('ignores pojo properties', () => {
@@ -31,22 +31,22 @@ describe('breeze observation adapter', function() {
       entity = {
         foo: 'bar'
       };
-    expect(adapter.handlesProperty(entity, 'foo')).toBe(false);
+    expect(adapter.getObserver(entity, 'foo')).toBe(null);
   });
 
   it('ignores undefined properties', () => {
     var adapter = new BreezeObservationAdapter(),
       entity = {};
-    expect(adapter.handlesProperty(entity, 'foo')).toBe(false);
+    expect(adapter.getObserver(entity, 'foo')).toBe(null);
   });
 
   it('handles breeze scalar properties', () => {
     var adapter = new BreezeObservationAdapter(),
       entity = memberType.createEntity();
-    expect(adapter.handlesProperty(entity, 'id')).toBe(true);
+    expect(adapter.getObserver(entity, 'id')).not.toBe(null);
   });
 
-  it('handles non-scalar navigation properties', () => {
+  it('ignores non-scalar navigation properties', () => {
     var adapter = new BreezeObservationAdapter(),
       member = entityManager.createEntity(memberType, {
         memberId: 1,
@@ -63,7 +63,7 @@ describe('breeze observation adapter', function() {
     var descriptor = Object.getPropertyDescriptor(member, 'repository');
     expect(descriptor).toBeUndefined();
 
-    expect(adapter.handlesProperty(member, 'repositories')).toBe(false);
+    expect(adapter.getObserver(member, 'repositories')).toBe(null);
   });
 
   it('handles scalar navigation properties', () => {
@@ -81,7 +81,7 @@ describe('breeze observation adapter', function() {
     var descriptor = Object.getPropertyDescriptor(repository, 'member');
     expect(descriptor).toBeDefined();
 
-    expect(adapter.handlesProperty(repository, 'member')).toBe(true);
+    expect(adapter.getObserver(repository, 'member')).not.toBe(null);
   });
 
   it('handles non-scalar data properties', () => {
@@ -100,7 +100,7 @@ describe('breeze observation adapter', function() {
     var descriptor = Object.getPropertyDescriptor(repository, 'files');
     expect(descriptor).toBeDefined();
 
-    expect(adapter.handlesProperty(repository, 'files')).toBe(true);
+    expect(adapter.getObserver(repository, 'files')).not.toBe(null);
   });
 
 
@@ -109,8 +109,8 @@ describe('breeze observation adapter', function() {
       entity = memberType.createEntity({
         id: 0
       });
-    expect(adapter.handlesProperty(entity, 'id')).toBe(true);
-    expect(adapter.handlesProperty(entity, 'login')).toBe(true);
+    expect(adapter.getObserver(entity, 'id')).not.toBe(null);
+    expect(adapter.getObserver(entity, 'login')).not.toBe(null);
   });
 
   it('handles attached entities', () => {
@@ -119,8 +119,8 @@ describe('breeze observation adapter', function() {
         memberId: 0,
         id: 0
       });
-    expect(adapter.handlesProperty(entity, 'id')).toBe(true);
-    expect(adapter.handlesProperty(entity, 'login')).toBe(true);
+    expect(adapter.getObserver(entity, 'id')).not.toBe(null);
+    expect(adapter.getObserver(entity, 'login')).not.toBe(null);
   });
 
   it('returns observer matching property-observer interface', () => {
@@ -134,6 +134,7 @@ describe('breeze observation adapter', function() {
     expect(Object.prototype.toString.call(observer.getValue)).toBe('[object Function]');
     expect(Object.prototype.toString.call(observer.setValue)).toBe('[object Function]');
     expect(Object.prototype.toString.call(observer.subscribe)).toBe('[object Function]');
+    expect(Object.prototype.toString.call(observer.unsubscribe)).toBe('[object Function]');
   });
 
   it('reuses property observers', () => {
@@ -181,26 +182,19 @@ describe('detached entity observation', function() {
     expect(entity.login).toBe('foo');
     expect(idObserver.getValue()).toBe(entity.id);
     expect(loginObserver.getValue()).toBe(entity.login);
-  // });
-  //
-  // it('subscribes', () => {
-    disposeId = idObserver.subscribe((newValue, oldValue) => {
-      change = {
-        newValue: newValue,
-        oldValue: oldValue
-      };
-    });
-    disposeLogin = loginObserver.subscribe((newValue, oldValue) => {
-      change = {
-        newValue: newValue,
-        oldValue: oldValue
-      };
-    });
-    expect(Object.prototype.toString.call(disposeId)).toBe('[object Function]');
-    expect(Object.prototype.toString.call(disposeLogin)).toBe('[object Function]');
-  // });
-  //
-  // it('tracks changes while subscribed', () => {
+
+    let callable = {
+      call: (context, newValue, oldValue) => {
+        change = {
+          newValue: newValue,
+          oldValue: oldValue
+        };
+      }
+    };
+    let context = 'test';
+    idObserver.subscribe(context, callable);
+    loginObserver.subscribe(context, callable);
+
     change = null;
     entity.id = 1;
     expect(change && change.newValue === 1 && change.oldValue === 0).toBe(true);
@@ -216,22 +210,17 @@ describe('detached entity observation', function() {
     change = null;
     loginObserver.setValue('baz');
     expect(change && change.newValue === 'baz' && change.oldValue === 'bar').toBe(true);
-  // });
-  //
-  // it('unsubscribes', () => {
-    expect(entity.__breezeObserver__.callbackCount).toBe(2);
-    disposeId();
-    expect(entity.__breezeObserver__.callbackCount).toBe(1);
-    disposeLogin();
-    expect(entity.__breezeObserver__.callbackCount).toBe(0);
 
-    // todo: find out if disposing extra times should throw.
-    disposeId();
-    disposeLogin();
-    expect(entity.__breezeObserver__.callbackCount).toBe(0);
-  // });
-  //
-  // it('does not track changes while unsubscribed', () => {
+    expect(entity.__breezeObserver__.subscribers).toBe(2);
+    idObserver.unsubscribe(context, callable);
+    expect(entity.__breezeObserver__.subscribers).toBe(1);
+    loginObserver.unsubscribe(context, callable);
+    expect(entity.__breezeObserver__.subscribers).toBe(0);
+
+    idObserver.unsubscribe(context, callable);
+    loginObserver.unsubscribe(context, callable);
+    expect(entity.__breezeObserver__.subscribers).toBe(0);
+
     change = null;
 
     entity.id = 3;
@@ -246,26 +235,10 @@ describe('detached entity observation', function() {
     change = null;
     loginObserver.setValue('foo');
     expect(change).toBe(null);
-  // });
-  //
-  // it('re-subscribes', () => {
-    disposeId = idObserver.subscribe((newValue, oldValue) => {
-      change = {
-        newValue: newValue,
-        oldValue: oldValue
-      };
-    });
-    disposeLogin = loginObserver.subscribe((newValue, oldValue) => {
-      change = {
-        newValue: newValue,
-        oldValue: oldValue
-      };
-    });
-    expect(Object.prototype.toString.call(disposeId)).toBe('[object Function]');
-    expect(Object.prototype.toString.call(disposeLogin)).toBe('[object Function]');
-  // });
-  //
-  // it('tracks changes after re-subscribing', () => {
+
+    idObserver.subscribe(context, callable);
+    loginObserver.subscribe(context, callable);
+
     change = null;
     entity.id = 1;
     expect(change && change.newValue === 1 && change.oldValue === 0).toBe(true);
@@ -319,26 +292,19 @@ describe('attached entity observation', function() {
     expect(entity.login).toBe('foo');
     expect(idObserver.getValue()).toBe(entity.id);
     expect(loginObserver.getValue()).toBe(entity.login);
-  // });
-  //
-  // it('subscribes', () => {
-    disposeId = idObserver.subscribe((newValue, oldValue) => {
-      change = {
-        newValue: newValue,
-        oldValue: oldValue
-      };
-    });
-    disposeLogin = loginObserver.subscribe((newValue, oldValue) => {
-      change = {
-        newValue: newValue,
-        oldValue: oldValue
-      };
-    });
-    expect(Object.prototype.toString.call(disposeId)).toBe('[object Function]');
-    expect(Object.prototype.toString.call(disposeLogin)).toBe('[object Function]');
-  // });
-  //
-  // it('tracks changes while subscribed', () => {
+
+    let callable = {
+      call: (context, newValue, oldValue) => {
+        change = {
+          newValue: newValue,
+          oldValue: oldValue
+        };
+      }
+    };
+    let context = 'test';
+    idObserver.subscribe(context, callable);
+    loginObserver.subscribe(context, callable);
+
     change = null;
     entity.id = 1;
     expect(change && change.newValue === 1 && change.oldValue === 0).toBe(true);
@@ -354,22 +320,17 @@ describe('attached entity observation', function() {
     change = null;
     loginObserver.setValue('baz');
     expect(change && change.newValue === 'baz' && change.oldValue === 'bar').toBe(true);
-  // });
-  //
-  // it('unsubscribes', () => {
-    expect(entity.__breezeObserver__.callbackCount).toBe(2);
-    disposeId();
-    expect(entity.__breezeObserver__.callbackCount).toBe(1);
-    disposeLogin();
-    expect(entity.__breezeObserver__.callbackCount).toBe(0);
 
-    // todo: find out if disposing extra times should throw.
-    disposeId();
-    disposeLogin();
-    expect(entity.__breezeObserver__.callbackCount).toBe(0);
-  // });
-  //
-  // it('does not track changes while unsubscribed', () => {
+    expect(entity.__breezeObserver__.subscribers).toBe(2);
+    idObserver.unsubscribe(context, callable);
+    expect(entity.__breezeObserver__.subscribers).toBe(1);
+    loginObserver.unsubscribe(context, callable);
+    expect(entity.__breezeObserver__.subscribers).toBe(0);
+
+    idObserver.unsubscribe(context, callable);
+    loginObserver.unsubscribe(context, callable);
+    expect(entity.__breezeObserver__.subscribers).toBe(0);
+
     change = null;
 
     entity.id = 3;
@@ -384,26 +345,10 @@ describe('attached entity observation', function() {
     change = null;
     loginObserver.setValue('foo');
     expect(change).toBe(null);
-  // });
-  //
-  // it('re-subscribes', () => {
-    disposeId = idObserver.subscribe((newValue, oldValue) => {
-      change = {
-        newValue: newValue,
-        oldValue: oldValue
-      };
-    });
-    disposeLogin = loginObserver.subscribe((newValue, oldValue) => {
-      change = {
-        newValue: newValue,
-        oldValue: oldValue
-      };
-    });
-    expect(Object.prototype.toString.call(disposeId)).toBe('[object Function]');
-    expect(Object.prototype.toString.call(disposeLogin)).toBe('[object Function]');
-  // });
-  //
-  // it('tracks changes after re-subscribing', () => {
+
+    idObserver.subscribe(context, callable);
+    loginObserver.subscribe(context, callable);
+
     change = null;
     entity.id = 1;
     expect(change && change.newValue === 1 && change.oldValue === 0).toBe(true);
@@ -419,14 +364,5 @@ describe('attached entity observation', function() {
     change = null;
     loginObserver.setValue('baz');
     expect(change && change.newValue === 'baz' && change.oldValue === 'bar').toBe(true);
-
-
-    entityManager.acceptChanges();
-    entity.login = 'boom';
-    expect(change && change.newValue === 'boom' && change.oldValue === 'baz').toBe(true);
-
-    change = null;
-    entityManager.rejectChanges();
-    expect(change && change.newValue === 'baz' && change.oldValue === 'boom').toBe(true);
   });
 });

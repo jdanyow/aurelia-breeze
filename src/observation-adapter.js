@@ -39,18 +39,13 @@ function createCanObserveLookup(entityType) {
 }
 
 export class BreezeObservationAdapter {
-  handlesProperty(object, propertyName) {
-    var type = object.entityType
-    return type ? !!(type.__canObserve__ || createCanObserveLookup(type))[propertyName] : false;
-  }
+  getObserver(object, propertyName, descriptor) {
+    let type = object.entityType
+    if (!type || !(type.__canObserve__ || createCanObserveLookup(type))[propertyName]) {
+      return null;
+    }
 
-  getObserver(object, propertyName) {
-    var observerLookup;
-
-    if (!this.handlesProperty(object, propertyName))
-      throw new Error(`BreezeBindingAdapter does not support observing the ${propertyName} property.  Check the handlesProperty method before calling createObserver.`);
-
-    observerLookup = object.__breezeObserver__ || createObserverLookup(object);
+    let observerLookup = object.__breezeObserver__ || createObserverLookup(object);
     return observerLookup.getObserver(propertyName);
   }
 }
