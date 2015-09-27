@@ -3,7 +3,7 @@ import {HttpClient} from 'aurelia-http-client';
 import breeze from 'breeze';
 import {Q} from './promise-adapter';
 import {BreezeObservationAdapter} from './observation-adapter';
-import {} from './ajax-adapter';
+import {AjaxAdapter} from './ajax-adapter';
 
 export function configure(frameworkConfig) {
   // ensure breeze is using the modelLibrary backing store (vs Knockout or Backbone)

@@ -2,7 +2,7 @@ import breeze from 'breeze';
 
 var extend = breeze.core.extend;
 
-class HttpResponse {
+export class HttpResponse {
   constructor(aureliaResponse, config) {
     this.config = config;
     this.status = aureliaResponse.statusCode;
@@ -17,7 +17,7 @@ class HttpResponse {
   }
 }
 
-class AjaxAdapter {
+export class AjaxAdapter {
   constructor() {
     this.name = 'aurelia';
     this.defaultHeaders;
