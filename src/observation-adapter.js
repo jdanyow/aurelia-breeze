@@ -1,12 +1,9 @@
-import {
-  BreezeObjectObserver,
-  BreezePropertyObserver,
-} from './property-observation';
+import {BreezeObjectObserver} from './property-observation';
 
 function createObserverLookup(obj) {
-  var value = new BreezeObjectObserver(obj);
+  let value = new BreezeObjectObserver(obj);
 
-  Object.defineProperty(obj, "__breezeObserver__", {
+  Object.defineProperty(obj, '__breezeObserver__', {
     enumerable: false,
     configurable: false,
     writable: false,
@@ -17,10 +14,10 @@ function createObserverLookup(obj) {
 }
 
 function createCanObserveLookup(entityType) {
-  var value = {}, properties = entityType.getProperties(), property, ii = properties.length, i;
-
-  for(i = 0; i < ii; i++) {
-    property = properties[i];
+  let value = {};
+  let properties = entityType.getProperties();
+  for (let i = 0, ii = properties.length; i < ii; i++) {
+    let property = properties[i];
 
     // determine whether the adapter should handle the property...
     // all combinations of navigation/data properties * scalar/non-scalar properties are handled EXCEPT
@@ -28,7 +25,7 @@ function createCanObserveLookup(entityType) {
     value[property.name] = property.isDataProperty || property.isScalar;
   }
 
-  Object.defineProperty(entityType, "__canObserve__", {
+  Object.defineProperty(entityType, '__canObserve__', {
     enumerable: false,
     configurable: false,
     writable: false,
@@ -40,7 +37,7 @@ function createCanObserveLookup(entityType) {
 
 export class BreezeObservationAdapter {
   getObserver(object, propertyName, descriptor) {
-    let type = object.entityType
+    let type = object.entityType;
     if (!type || !(type.__canObserve__ || createCanObserveLookup(type))[propertyName]) {
       return null;
     }

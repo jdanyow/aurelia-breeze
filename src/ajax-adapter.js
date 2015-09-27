@@ -1,6 +1,6 @@
 import breeze from 'breeze';
 
-var extend = breeze.core.extend;
+const extend = breeze.core.extend;
 
 export class HttpResponse {
   constructor(aureliaResponse, config) {
@@ -11,8 +11,9 @@ export class HttpResponse {
   }
 
   getHeader(headerName) {
-    if (headerName === null || headerName === undefined || headerName === '')
+    if (headerName === null || headerName === undefined || headerName === '') {
       return this.headers.headers;
+    }
     return this.headers.get(headerName);
   }
 }
@@ -35,10 +36,8 @@ export class AjaxAdapter {
   initialize() {}
 
   ajax(config) {
-    var requestInfo, header, method, request;
-
     // build the request info object.
-    requestInfo = {
+    let requestInfo = {
       adapter: this,
       config: extend({}, config),
       zConfig: config,
@@ -54,19 +53,20 @@ export class AjaxAdapter {
       if (this.requestInterceptor.oneTime) {
         this.requestInterceptor = null;
       }
-      if (!requestInfo.config)
+      if (!requestInfo.config) {
         return;
+      }
     }
     config = requestInfo.config;
 
     // configure the request...
-    request = config.request;
+    let request = config.request;
 
     // uri.
     request.withUrl(config.url);
 
     // method.
-    method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
+    let method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
     method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);
     request[method]();
 
@@ -77,8 +77,8 @@ export class AjaxAdapter {
     if (config.contentType) {
       request.withHeader('Content-Type', config.contentType);
     }
-    for(header in config.headers) {
-      if(config.headers.hasOwnProperty(header)) {
+    for (let header in config.headers) {
+      if (config.headers.hasOwnProperty(header)) {
         request.withHeader(header, config.headers[header]);
       }
     }
@@ -97,4 +97,4 @@ export class AjaxAdapter {
   }
 }
 
-breeze.config.registerAdapter("ajax", AjaxAdapter);
+breeze.config.registerAdapter('ajax', AjaxAdapter);

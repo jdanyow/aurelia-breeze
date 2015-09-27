@@ -14,7 +14,7 @@ export class Q {
 
 export class Deferred {
   constructor() {
-    var self = this;
+    let self = this;
     this.promise = new Promise(
       function(resolve, reject) {
         self.resolve = resolve;
