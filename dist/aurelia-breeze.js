@@ -2,7 +2,7 @@ import breeze from 'breeze';
 import {subscriberCollection,ObserverLocator} from 'aurelia-binding';
 import {HttpClient} from 'aurelia-http-client';
 
-var extend = breeze.core.extend;
+const extend = breeze.core.extend;
 
 export class HttpResponse {
   constructor(aureliaResponse, config) {
@@ -13,8 +13,9 @@ export class HttpResponse {
   }
 
   getHeader(headerName) {
-    if (headerName === null || headerName === undefined || headerName === '')
+    if (headerName === null || headerName === undefined || headerName === '') {
       return this.headers.headers;
+    }
     return this.headers.get(headerName);
   }
 }
@@ -37,10 +38,8 @@ export class AjaxAdapter {
   initialize() {}
 
   ajax(config) {
-    var requestInfo, header, method, request;
-
     // build the request info object.
-    requestInfo = {
+    let requestInfo = {
       adapter: this,
       config: extend({}, config),
       zConfig: config,
@@ -56,19 +55,20 @@ export class AjaxAdapter {
       if (this.requestInterceptor.oneTime) {
         this.requestInterceptor = null;
       }
-      if (!requestInfo.config)
+      if (!requestInfo.config) {
         return;
+      }
     }
     config = requestInfo.config;
 
     // configure the request...
-    request = config.request;
+    let request = config.request;
 
     // uri.
     request.withUrl(config.url);
 
     // method.
-    method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
+    let method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
     method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);
     request[method]();
 
@@ -79,8 +79,8 @@ export class AjaxAdapter {
     if (config.contentType) {
       request.withHeader('Content-Type', config.contentType);
     }
-    for(header in config.headers) {
-      if(config.headers.hasOwnProperty(header)) {
+    for (let header in config.headers) {
+      if (config.headers.hasOwnProperty(header)) {
         request.withHeader(header, config.headers[header]);
       }
     }
@@ -99,7 +99,7 @@ export class AjaxAdapter {
   }
 }
 
-breeze.config.registerAdapter("ajax", AjaxAdapter);
+breeze.config.registerAdapter('ajax', AjaxAdapter);
 
 export class Q {
   static defer() {
@@ -117,7 +117,7 @@ export class Q {
 
 export class Deferred {
   constructor() {
-    var self = this;
+    let self = this;
     this.promise = new Promise(
       function(resolve, reject) {
         self.resolve = resolve;
@@ -209,9 +209,9 @@ export class BreezeObjectObserver {
 }
 
 function createObserverLookup(obj) {
-  var value = new BreezeObjectObserver(obj);
+  let value = new BreezeObjectObserver(obj);
 
-  Object.defineProperty(obj, "__breezeObserver__", {
+  Object.defineProperty(obj, '__breezeObserver__', {
     enumerable: false,
     configurable: false,
     writable: false,
@@ -222,10 +222,10 @@ function createObserverLookup(obj) {
 }
 
 function createCanObserveLookup(entityType) {
-  var value = {}, properties = entityType.getProperties(), property, ii = properties.length, i;
-
-  for(i = 0; i < ii; i++) {
-    property = properties[i];
+  let value = {};
+  let properties = entityType.getProperties();
+  for (let i = 0, ii = properties.length; i < ii; i++) {
+    let property = properties[i];
 
     // determine whether the adapter should handle the property...
     // all combinations of navigation/data properties * scalar/non-scalar properties are handled EXCEPT
@@ -233,7 +233,7 @@ function createCanObserveLookup(entityType) {
     value[property.name] = property.isDataProperty || property.isScalar;
   }
 
-  Object.defineProperty(entityType, "__canObserve__", {
+  Object.defineProperty(entityType, '__canObserve__', {
     enumerable: false,
     configurable: false,
     writable: false,
@@ -245,7 +245,7 @@ function createCanObserveLookup(entityType) {
 
 export class BreezeObservationAdapter {
   getObserver(object, propertyName, descriptor) {
-    let type = object.entityType
+    let type = object.entityType;
     if (!type || !(type.__canObserve__ || createCanObserveLookup(type))[propertyName]) {
       return null;
     }
@@ -255,9 +255,11 @@ export class BreezeObservationAdapter {
   }
 }
 
+//eslint-disable-line no-unused-vars
+
 export function configure(frameworkConfig) {
   // ensure breeze is using the modelLibrary backing store (vs Knockout or Backbone)
-  breeze.config.initializeAdapterInstance("modelLibrary", "backingStore");
+  breeze.config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
   // make breeze use our ES6 Promise based version of Q.
   breeze.config.setQ(Q);
@@ -269,6 +271,6 @@ export function configure(frameworkConfig) {
   // the adapter lazily gets the HttpClient instance to enable scenarios where
   // the aurelia-breeze plugin is installed prior to the HttpClient being
   // configured in the container.
-  var adapter = breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
+  let adapter = breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
   adapter.setHttpClientFactory(() => frameworkConfig.container.get(HttpClient));
 }

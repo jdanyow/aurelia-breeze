@@ -37,5 +37,7 @@ declare module 'aurelia-breeze' {
   export class BreezeObservationAdapter {
     getObserver(object: any, propertyName: any, descriptor: any): any;
   }
+  
+  // eslint-disable-line no-unused-vars
   export function configure(frameworkConfig: any): any;
 }

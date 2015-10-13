@@ -1,6 +1,8 @@
 import breeze from 'breeze';
 import getEntityManager from './breeze-setup';
 import {HttpClient} from 'aurelia-http-client';
+import {initialize} from 'aurelia-pal-browser';
+initialize();
 
 if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   var CustomEvent = function(event, params) {

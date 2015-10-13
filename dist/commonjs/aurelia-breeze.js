@@ -31,7 +31,9 @@ var HttpResponse = (function () {
   }
 
   HttpResponse.prototype.getHeader = function getHeader(headerName) {
-    if (headerName === null || headerName === undefined || headerName === '') return this.headers.headers;
+    if (headerName === null || headerName === undefined || headerName === '') {
+      return this.headers.headers;
+    }
     return this.headers.get(headerName);
   };
 
@@ -56,9 +58,7 @@ var AjaxAdapter = (function () {
   AjaxAdapter.prototype.initialize = function initialize() {};
 
   AjaxAdapter.prototype.ajax = function ajax(config) {
-    var requestInfo, header, method, request;
-
-    requestInfo = {
+    var requestInfo = {
       adapter: this,
       config: extend({}, config),
       zConfig: config,
@@ -73,15 +73,17 @@ var AjaxAdapter = (function () {
       if (this.requestInterceptor.oneTime) {
         this.requestInterceptor = null;
       }
-      if (!requestInfo.config) return;
+      if (!requestInfo.config) {
+        return;
+      }
     }
     config = requestInfo.config;
 
-    request = config.request;
+    var request = config.request;
 
     request.withUrl(config.url);
 
-    method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
+    var method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
     method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);
     request[method]();
 
@@ -90,7 +92,7 @@ var AjaxAdapter = (function () {
     if (config.contentType) {
       request.withHeader('Content-Type', config.contentType);
     }
-    for (header in config.headers) {
+    for (var header in config.headers) {
       if (config.headers.hasOwnProperty(header)) {
         request.withHeader(header, config.headers[header]);
       }
@@ -119,7 +121,7 @@ var AjaxAdapter = (function () {
 
 exports.AjaxAdapter = AjaxAdapter;
 
-_breeze2['default'].config.registerAdapter("ajax", AjaxAdapter);
+_breeze2['default'].config.registerAdapter('ajax', AjaxAdapter);
 
 var Q = (function () {
   function Q() {
@@ -252,7 +254,7 @@ exports.BreezeObjectObserver = BreezeObjectObserver;
 function createObserverLookup(obj) {
   var value = new BreezeObjectObserver(obj);
 
-  Object.defineProperty(obj, "__breezeObserver__", {
+  Object.defineProperty(obj, '__breezeObserver__', {
     enumerable: false,
     configurable: false,
     writable: false,
@@ -263,19 +265,15 @@ function createObserverLookup(obj) {
 }
 
 function createCanObserveLookup(entityType) {
-  var value = {},
-      properties = entityType.getProperties(),
-      property,
-      ii = properties.length,
-      i;
-
-  for (i = 0; i < ii; i++) {
-    property = properties[i];
+  var value = {};
+  var properties = entityType.getProperties();
+  for (var i = 0, ii = properties.length; i < ii; i++) {
+    var property = properties[i];
 
     value[property.name] = property.isDataProperty || property.isScalar;
   }
 
-  Object.defineProperty(entityType, "__canObserve__", {
+  Object.defineProperty(entityType, '__canObserve__', {
     enumerable: false,
     configurable: false,
     writable: false,
@@ -306,7 +304,7 @@ var BreezeObservationAdapter = (function () {
 exports.BreezeObservationAdapter = BreezeObservationAdapter;
 
 function configure(frameworkConfig) {
-  _breeze2['default'].config.initializeAdapterInstance("modelLibrary", "backingStore");
+  _breeze2['default'].config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
   _breeze2['default'].config.setQ(Q);
 
