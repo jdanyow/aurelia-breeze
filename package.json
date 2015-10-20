@@ -29,6 +29,7 @@
       "aurelia-http-client": "github:aurelia/http-client@^0.12.0",
       "aurelia-pal": "github:aurelia/pal@^0.2.0",
       "aurelia-pal-browser": "github:aurelia/pal-browser@^0.2.0",
+      "aurelia-templating": "github:aurelia/templating@^0.16.0",
       "breeze": "npm:breeze-client@^1.5.5"
     },
     "devDependencies": {

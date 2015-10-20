@@ -39,9 +39,8 @@ module.exports = function(config) {
         modules: 'system',
         moduleIds: false,
         loose: "all",
-        optional: [
-          "es7.decorators"
-        ]
+        stage: 0,
+        optional: []
       }
     },
 

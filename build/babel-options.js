@@ -14,12 +14,9 @@ module.exports = {
   comments: false,
   compact: false,
   code:true,
-  stage:2,
+  stage:0,
   loose: "all",
-  optional: [
-    "es7.decorators",
-    "es7.classProperties"
-  ],
+  optional: [],
   plugins: [
     "babel-dts-generator"
   ],
