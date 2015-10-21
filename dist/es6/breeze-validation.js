@@ -12,6 +12,7 @@ import {ErrorRenderer} from './error-renderer';
 @customAttribute('breeze-validation')
 @inject(Element, ErrorRenderer)
 export class BreezeValidation {
+  errors = [];
   view;
   element;
   renderer;
@@ -21,7 +22,6 @@ export class BreezeValidation {
   constructor(element, renderer) {
     this.element = element;
     this.renderer = renderer;
-    renderer.setRoot(element);
   }
 
   created(view) {
@@ -29,10 +29,8 @@ export class BreezeValidation {
   }
 
   isInteresting(entity) {
-    if (this.value.entityAspect) {
-      return entity === this.value;
-    }
-    return this.value.getEntities().indexOf(entity) !== -1;
+    return this.value.entityAspect && entity === this.value // this.value is the entity
+      || this.value.getEntities && this.value.getEntities().indexOf(entity) !== -1; // this.value is the EntityManager that contains the entity.
   }
 
   validationErrorsChanged(event) {
@@ -42,13 +40,22 @@ export class BreezeValidation {
     }
     for (let i = 0; i < removed.length; i++) {
       let error = removed[i];
-      let property = this.properties.find(p => p.propertyName === error.propertyName);
-      this.renderer.unrender(error, property);
+      let property = this.properties.find(p => p.propertyName === error.propertyName && p.entity === entity);
+      let index = this.errors.findIndex(e => e.context.entity === entity && e.key === error.key);
+      if (index === -1) {
+        return;
+      }
+      this.errors.splice(index, 1);
+      this.renderer.unrender(this.element, error, property);
     }
     for (let i = 0; i < added.length; i++) {
       let error = added[i];
-      let property = this.properties.find(p => p.propertyName === error.propertyName);
-      this.renderer.render(error, property);
+      let property = this.properties.find(p => p.propertyName === error.propertyName && p.entity === entity);
+      if (this.errors.find(e => e.context.entity === entity && e.key === error.key)) {
+        return;
+      }
+      this.errors.push(error);
+      this.renderer.render(this.element, error, property);
     }
   }
 
@@ -91,8 +98,8 @@ export class BreezeValidation {
     return { entity, propertyName };
   }
 
-  subscribe(entityManager) {
-    this.errorsSubscription = entityManager.validationErrorsChanged.subscribe(::this.validationErrorsChanged);
+  subscribe(errorsChangedEvent) {
+    this.errorsSubscription = errorsChangedEvent.subscribe(::this.validationErrorsChanged);
     this.properties = this.view.bindings
       .filter(b => b.mode === bindingMode.twoWay && this.element.contains(b.targetProperty.element))  // potentially unsafe...
       .map(b => {
@@ -106,30 +113,41 @@ export class BreezeValidation {
       .filter(p => p !== null);
   }
 
-  unsubscribe(entityManager) {
-    entityManager.validationErrorsChanged.unsubscribe(this.errorsSubscription);
-    this.renderer.unrenderAll();
+  unsubscribe(errorsChangedEvent) {
+    errorsChangedEvent.unsubscribe(this.errorsSubscription);
+    let i = this.errors.length;
+    while(i--) {
+      this.renderer.unrender(this.errors[i]);
+    }
+    this.errors.splice(0, this.errors.length);
   }
 
-  getEntityManager(value) {
-    return value.entityAspect ? value.entityAspect.entityManager : this.value;
+  getErrorsChangedEvent(value) {
+    if (!value) {
+      return null;
+    }
+    if (value.validationErrorsChanged) {
+      // value is an EntityManager
+      return value.validationErrorsChanged;
+    }
+    if (value.entityAspect) {
+      // value is an Entity
+      return value.entityAspect.validationErrorsChanged;
+    }
+    return null;
   }
 
   valueChanged(newValue, oldValue) {
-    if (oldValue) {
-      let entityManager = this.getEntityManager(oldValue);
-      this.unsubscribe(entityManager);
+    let errorsChangedEvent;
+    if (errorsChangedEvent = this.getErrorsChangedEvent(oldValue)) {
+      this.unsubscribe(errorsChangedEvent);
     }
-    if (this.value) {
-      let entityManager = this.getEntityManager(this.value);
-      this.subscribe(entityManager);
+    if (errorsChangedEvent = this.getErrorsChangedEvent(this.value)) {
+      this.subscribe(errorsChangedEvent);
     }
   }
 
   detached() {
-    if (this.value) {
-      let entityManager = this.getEntityManager(this.value);
-      this.unsubscribe(entityManager);
-    }
+    this.valueChanged(null, this.value);
   }
 }

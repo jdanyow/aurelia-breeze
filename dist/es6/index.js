@@ -17,7 +17,7 @@ export function configure(frameworkConfig) {
   frameworkConfig.container.get(ObserverLocator).addAdapter(new BreezeObservationAdapter());
 
   // default error renderer.
-  frameworkConfig.container.registerTransient(ErrorRenderer, BootstrapErrorRenderer);
+  frameworkConfig.container.registerInstance(ErrorRenderer, new BootstrapErrorRenderer());
 
   // breeze-validation attribute.
   frameworkConfig.globalResources('./breeze-validation');

@@ -24,9 +24,10 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         function BreezeValidation(element, renderer) {
           _classCallCheck(this, _BreezeValidation);
 
+          this.errors = [];
+
           this.element = element;
           this.renderer = renderer;
-          renderer.setRoot(element);
         }
 
         BreezeValidation.prototype.created = function created(view) {
@@ -34,10 +35,7 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
         };
 
         BreezeValidation.prototype.isInteresting = function isInteresting(entity) {
-          if (this.value.entityAspect) {
-            return entity === this.value;
-          }
-          return this.value.getEntities().indexOf(entity) !== -1;
+          return this.value.entityAspect && entity === this.value || this.value.getEntities && this.value.getEntities().indexOf(entity) !== -1;
         };
 
         BreezeValidation.prototype.validationErrorsChanged = function validationErrorsChanged(event) {
@@ -54,25 +52,46 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           var _loop = function (i) {
             var error = removed[i];
             var property = _this.properties.find(function (p) {
-              return p.propertyName === error.propertyName;
+              return p.propertyName === error.propertyName && p.entity === entity;
             });
-            _this.renderer.unrender(error, property);
+            var index = _this.errors.findIndex(function (e) {
+              return e.context.entity === entity && e.key === error.key;
+            });
+            if (index === -1) {
+              return {
+                v: undefined
+              };
+            }
+            _this.errors.splice(index, 1);
+            _this.renderer.unrender(_this.element, error, property);
           };
 
           for (var i = 0; i < removed.length; i++) {
-            _loop(i);
+            var _ret = _loop(i);
+
+            if (typeof _ret === 'object') return _ret.v;
           }
 
           var _loop2 = function (i) {
             var error = added[i];
             var property = _this.properties.find(function (p) {
-              return p.propertyName === error.propertyName;
+              return p.propertyName === error.propertyName && p.entity === entity;
             });
-            _this.renderer.render(error, property);
+            if (_this.errors.find(function (e) {
+              return e.context.entity === entity && e.key === error.key;
+            })) {
+              return {
+                v: undefined
+              };
+            }
+            _this.errors.push(error);
+            _this.renderer.render(_this.element, error, property);
           };
 
           for (var i = 0; i < added.length; i++) {
-            _loop2(i);
+            var _ret2 = _loop2(i);
+
+            if (typeof _ret2 === 'object') return _ret2.v;
           }
         };
 
@@ -112,10 +131,10 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           return { entity: entity, propertyName: propertyName };
         };
 
-        BreezeValidation.prototype.subscribe = function subscribe(entityManager) {
+        BreezeValidation.prototype.subscribe = function subscribe(errorsChangedEvent) {
           var _this2 = this;
 
-          this.errorsSubscription = entityManager.validationErrorsChanged.subscribe(this.validationErrorsChanged.bind(this));
+          this.errorsSubscription = errorsChangedEvent.subscribe(this.validationErrorsChanged.bind(this));
           this.properties = this.view.bindings.filter(function (b) {
             return b.mode === bindingMode.twoWay && _this2.element.contains(b.targetProperty.element);
           }).map(function (b) {
@@ -130,31 +149,40 @@ System.register(['aurelia-templating', 'aurelia-dependency-injection', 'aurelia-
           });
         };
 
-        BreezeValidation.prototype.unsubscribe = function unsubscribe(entityManager) {
-          entityManager.validationErrorsChanged.unsubscribe(this.errorsSubscription);
-          this.renderer.unrenderAll();
+        BreezeValidation.prototype.unsubscribe = function unsubscribe(errorsChangedEvent) {
+          errorsChangedEvent.unsubscribe(this.errorsSubscription);
+          var i = this.errors.length;
+          while (i--) {
+            this.renderer.unrender(this.errors[i]);
+          }
+          this.errors.splice(0, this.errors.length);
         };
 
-        BreezeValidation.prototype.getEntityManager = function getEntityManager(value) {
-          return value.entityAspect ? value.entityAspect.entityManager : this.value;
+        BreezeValidation.prototype.getErrorsChangedEvent = function getErrorsChangedEvent(value) {
+          if (!value) {
+            return null;
+          }
+          if (value.validationErrorsChanged) {
+            return value.validationErrorsChanged;
+          }
+          if (value.entityAspect) {
+            return value.entityAspect.validationErrorsChanged;
+          }
+          return null;
         };
 
         BreezeValidation.prototype.valueChanged = function valueChanged(newValue, oldValue) {
-          if (oldValue) {
-            var entityManager = this.getEntityManager(oldValue);
-            this.unsubscribe(entityManager);
+          var errorsChangedEvent = undefined;
+          if (errorsChangedEvent = this.getErrorsChangedEvent(oldValue)) {
+            this.unsubscribe(errorsChangedEvent);
           }
-          if (this.value) {
-            var entityManager = this.getEntityManager(this.value);
-            this.subscribe(entityManager);
+          if (errorsChangedEvent = this.getErrorsChangedEvent(this.value)) {
+            this.subscribe(errorsChangedEvent);
           }
         };
 
         BreezeValidation.prototype.detached = function detached() {
-          if (this.value) {
-            var entityManager = this.getEntityManager(this.value);
-            this.unsubscribe(entityManager);
-          }
+          this.valueChanged(null, this.value);
         };
 
         var _BreezeValidation = BreezeValidation;

@@ -28,7 +28,7 @@ function configure(frameworkConfig) {
 
   frameworkConfig.container.get(_aureliaBinding.ObserverLocator).addAdapter(new _observationAdapter.BreezeObservationAdapter());
 
-  frameworkConfig.container.registerTransient(_errorRenderer.ErrorRenderer, _errorRenderer.BootstrapErrorRenderer);
+  frameworkConfig.container.registerInstance(_errorRenderer.ErrorRenderer, new _errorRenderer.BootstrapErrorRenderer());
 
   frameworkConfig.globalResources('./breeze-validation');
 

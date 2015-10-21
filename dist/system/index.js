@@ -12,7 +12,7 @@ System.register(['aurelia-binding', 'aurelia-http-client', 'breeze', './promise-
 
     frameworkConfig.container.get(ObserverLocator).addAdapter(new BreezeObservationAdapter());
 
-    frameworkConfig.container.registerTransient(ErrorRenderer, BootstrapErrorRenderer);
+    frameworkConfig.container.registerInstance(ErrorRenderer, new BootstrapErrorRenderer());
 
     frameworkConfig.globalResources('./breeze-validation');
 

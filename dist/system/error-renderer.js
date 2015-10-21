@@ -1,33 +1,23 @@
-System.register(['aurelia-dependency-injection'], function (_export) {
+System.register([], function (_export) {
   'use strict';
 
-  var transient, ErrorRenderer, BootstrapErrorRenderer;
+  var ErrorRenderer, BootstrapErrorRenderer;
 
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
   return {
-    setters: [function (_aureliaDependencyInjection) {
-      transient = _aureliaDependencyInjection.transient;
-    }],
+    setters: [],
     execute: function () {
       ErrorRenderer = (function () {
         function ErrorRenderer() {
           _classCallCheck(this, ErrorRenderer);
         }
 
-        ErrorRenderer.prototype.setRoot = function setRoot(element) {
+        ErrorRenderer.prototype.render = function render(rootElement, error, property) {
           throw new Error('An error renderer must be registered.');
         };
 
-        ErrorRenderer.prototype.render = function render(validationError, property) {
-          throw new Error('An error renderer must be registered.');
-        };
-
-        ErrorRenderer.prototype.unrender = function unrender(validationError, property) {
-          throw new Error('An error renderer must be registered.');
-        };
-
-        ErrorRenderer.prototype.unrenderAll = function unrenderAll() {
+        ErrorRenderer.prototype.unrender = function unrender(rootElement, error, property) {
           throw new Error('An error renderer must be registered.');
         };
 
@@ -38,97 +28,68 @@ System.register(['aurelia-dependency-injection'], function (_export) {
 
       BootstrapErrorRenderer = (function () {
         function BootstrapErrorRenderer() {
-          _classCallCheck(this, _BootstrapErrorRenderer);
-
-          this.propertyErrors = new Map();
-          this.entityErrors = new Map();
+          _classCallCheck(this, BootstrapErrorRenderer);
         }
 
-        BootstrapErrorRenderer.prototype.setRoot = function setRoot(element) {
-          this.element = element;
-        };
-
-        BootstrapErrorRenderer.prototype.render = function render(error, property) {
+        BootstrapErrorRenderer.prototype.render = function render(rootElement, error, property) {
           if (property) {
-            if (!this.propertyErrors.has(error.key)) {
-              var formGroup = property.element.closest('.form-group');
-              formGroup.classList.add('has-error');
+            var formGroup = property.element.closest('.form-group');
+            formGroup.classList.add('has-error');
 
-              var messageContainer = property.element.closest('div:not(.input-group)');
-              var message = document.createElement('span');
-              message.classList.add('help-block');
-              message.textContent = error.errorMessage;
-              messageContainer.appendChild(message);
-
-              this.propertyErrors.set(error.key, { formGroup: formGroup, messageContainer: messageContainer, message: message });
-            }
+            var messageContainer = property.element.closest('div:not(.input-group)');
+            var _message = document.createElement('span');
+            _message.classList.add('validation-error');
+            _message.error = error;
+            _message.classList.add('help-block');
+            _message.classList.add('validation-error');
+            _message.textContent = error.errorMessage;
+            messageContainer.appendChild(_message);
           }
 
-          if (!this.entityErrors.has(error.key)) {
-            var _alert = this.alert;
-            if (!_alert) {
-              _alert = document.createElement('div');
-              _alert.setAttribute('role', 'alert');
-              _alert.classList.add('alert');
-              _alert.classList.add('alert-danger');
-              if (this.element.firstChild) {
-                this.element.insertBefore(_alert, this.element.firstChild);
-              } else {
-                this.element.appendChild(_alert);
-              }
-              this.alert = _alert;
-            }
-
-            var message = document.createElement('p');
-            message.textContent = error.errorMessage;
-            _alert.appendChild(message);
-
-            this.entityErrors.set(error.key, message);
-          }
-        };
-
-        BootstrapErrorRenderer.prototype.unrender = function unrender(error, property) {
-          if (this.propertyErrors.has(error.key)) {
-            var _propertyErrors$get = this.propertyErrors.get(error.key);
-
-            var formGroup = _propertyErrors$get.formGroup;
-            var messageContainer = _propertyErrors$get.messageContainer;
-            var message = _propertyErrors$get.message;
-
-            this.propertyErrors['delete'](error.key);
-            formGroup.classList.remove('has-error');
-            messageContainer.removeChild(message);
-          }
-          if (this.entityErrors.has(error.key)) {
-            var message = this.entityErrors.get(error.key);
-            this.entityErrors['delete'](error.key);
-            this.alert.removeChild(message);
-            if (this.entityErrors.size === 0) {
-              this.element.removeChild(this.alert);
-              this.alert = null;
-            }
-          }
-        };
-
-        BootstrapErrorRenderer.prototype.unrenderAll = function unrenderAll() {
-          for (var _iterator = this.entityErrors, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
-            if (_isArray) {
-              if (_i >= _iterator.length) break;
-              var _iterator2 = _iterator[_i++];
-              error = _iterator2[0];
+          var alert = rootElement.querySelector('.validation-summary');
+          if (!alert) {
+            alert = document.createElement('div');
+            alert.setAttribute('role', 'alert');
+            alert.classList.add('alert');
+            alert.classList.add('alert-danger');
+            alert.classList.add('validation-summary');
+            if (rootElement.firstChild) {
+              rootElement.insertBefore(alert, rootElement.firstChild);
             } else {
-              _i = _iterator.next();
-              if (_i.done) break;
-              var _i$value = _i.value;
-              error = _i$value[0];
+              rootElement.appendChild(alert);
             }
+          }
 
-            this.unrender(error);
+          var message = document.createElement('p');
+          message.classList.add('validation-error');
+          message.error = error;
+          message.textContent = error.errorMessage;
+          alert.appendChild(message);
+        };
+
+        BootstrapErrorRenderer.prototype.unrender = function unrender(rootElement, error, property) {
+          if (property) {
+            var formGroup = property.element.closest('.form-group');
+            formGroup.classList.remove('has-error');
+          }
+
+          var messages = rootElement.querySelectorAll('.validation-error');
+          var i = messages.length;
+          while (i--) {
+            var message = messages[i];
+            if (message.error.context.entity !== error.context.entity || message.error.key !== error.key) {
+              continue;
+            }
+            message.error = null;
+            message.remove();
+          }
+
+          var alert = rootElement.querySelector('.validation-summary');
+          if (alert && alert.querySelectorAll('.validation-error').length === 0) {
+            alert.remove();
           }
         };
 
-        var _BootstrapErrorRenderer = BootstrapErrorRenderer;
-        BootstrapErrorRenderer = transient()(BootstrapErrorRenderer) || BootstrapErrorRenderer;
         return BootstrapErrorRenderer;
       })();
 
