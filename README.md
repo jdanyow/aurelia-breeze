@@ -7,6 +7,7 @@ What's included:
 1. An adapter for observing Breeze entities.
 2. A Breeze [ajax adapter](http://www.getbreezenow.com/documentation/controlling-ajax) that uses Aurelia's [http-client](https://github.com/aurelia/http-client).
 3. A [light-weight substitute](https://github.com/jdanyow/aurelia-breeze/blob/master/src/promise-adapter.js) for Breeze's dependency on [Q](https://github.com/kriskowal/q) that uses [ES6 promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+4. Automatic form validation for Breeze entities.  Info [here](http://www.danyow.net/form-validation-with-breeze-and-aurelia/).
 
 
 ## FAQ
