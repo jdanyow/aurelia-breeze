@@ -117,7 +117,7 @@ export class BreezeValidation {
     errorsChangedEvent.unsubscribe(this.errorsSubscription);
     let i = this.errors.length;
     while(i--) {
-      this.renderer.unrender(this.errors[i]);
+      this.renderer.unrender(this.element, this.errors[i]);
     }
     this.errors.splice(0, this.errors.length);
   }

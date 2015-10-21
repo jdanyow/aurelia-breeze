@@ -145,7 +145,7 @@ var BreezeValidation = (function () {
     errorsChangedEvent.unsubscribe(this.errorsSubscription);
     var i = this.errors.length;
     while (i--) {
-      this.renderer.unrender(this.errors[i]);
+      this.renderer.unrender(this.element, this.errors[i]);
     }
     this.errors.splice(0, this.errors.length);
   };
