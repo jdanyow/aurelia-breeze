@@ -1,4 +1,4 @@
-define(['exports', 'aurelia-binding', 'aurelia-http-client', 'breeze', './promise-adapter', './observation-adapter', './ajax-adapter', './error-renderer'], function (exports, _aureliaBinding, _aureliaHttpClient, _breeze, _promiseAdapter, _observationAdapter, _ajaxAdapter, _errorRenderer) {
+define(['exports', 'aurelia-binding', 'aurelia-http-client', 'breeze', './promise-adapter', './validation/error-renderer', './validation/bootstrap-error-renderer', './observation-adapter', './ajax-adapter'], function (exports, _aureliaBinding, _aureliaHttpClient, _breeze, _promiseAdapter, _validationErrorRenderer, _validationBootstrapErrorRenderer, _observationAdapter, _ajaxAdapter) {
   'use strict';
 
   exports.__esModule = true;
@@ -8,6 +8,8 @@ define(['exports', 'aurelia-binding', 'aurelia-http-client', 'breeze', './promis
 
   var _breeze2 = _interopRequireDefault(_breeze);
 
+  exports.ErrorRenderer = _validationErrorRenderer.ErrorRenderer;
+
   function configure(frameworkConfig) {
     _breeze2['default'].config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
@@ -15,9 +17,9 @@ define(['exports', 'aurelia-binding', 'aurelia-http-client', 'breeze', './promis
 
     frameworkConfig.container.get(_aureliaBinding.ObserverLocator).addAdapter(new _observationAdapter.BreezeObservationAdapter());
 
-    frameworkConfig.container.registerInstance(_errorRenderer.ErrorRenderer, new _errorRenderer.BootstrapErrorRenderer());
+    frameworkConfig.container.registerInstance(_validationErrorRenderer.ErrorRenderer, new _validationBootstrapErrorRenderer.BootstrapErrorRenderer());
 
-    frameworkConfig.globalResources('./breeze-validation');
+    frameworkConfig.globalResources('./validation/breeze-validation');
 
     var adapter = _breeze2['default'].config.initializeAdapterInstance('ajax', 'aurelia', true);
     adapter.setHttpClientFactory(function () {

@@ -1,31 +1,19 @@
-define(['exports'], function (exports) {
+define(['exports', './error-renderer'], function (exports, _errorRenderer) {
   'use strict';
 
   exports.__esModule = true;
 
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-  var ErrorRenderer = (function () {
-    function ErrorRenderer() {
-      _classCallCheck(this, ErrorRenderer);
-    }
+  function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-    ErrorRenderer.prototype.render = function render(rootElement, error, property) {
-      throw new Error('An error renderer must be registered.');
-    };
+  var BootstrapErrorRenderer = (function (_ErrorRenderer) {
+    _inherits(BootstrapErrorRenderer, _ErrorRenderer);
 
-    ErrorRenderer.prototype.unrender = function unrender(rootElement, error, property) {
-      throw new Error('An error renderer must be registered.');
-    };
-
-    return ErrorRenderer;
-  })();
-
-  exports.ErrorRenderer = ErrorRenderer;
-
-  var BootstrapErrorRenderer = (function () {
     function BootstrapErrorRenderer() {
       _classCallCheck(this, BootstrapErrorRenderer);
+
+      _ErrorRenderer.apply(this, arguments);
     }
 
     BootstrapErrorRenderer.prototype.render = function render(rootElement, error, property) {
@@ -88,7 +76,7 @@ define(['exports'], function (exports) {
     };
 
     return BootstrapErrorRenderer;
-  })();
+  })(_errorRenderer.ErrorRenderer);
 
   exports.BootstrapErrorRenderer = BootstrapErrorRenderer;
 

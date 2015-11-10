@@ -15,11 +15,15 @@ var _breeze2 = _interopRequireDefault(_breeze);
 
 var _promiseAdapter = require('./promise-adapter');
 
+var _validationErrorRenderer = require('./validation/error-renderer');
+
+var _validationBootstrapErrorRenderer = require('./validation/bootstrap-error-renderer');
+
 var _observationAdapter = require('./observation-adapter');
 
 var _ajaxAdapter = require('./ajax-adapter');
 
-var _errorRenderer = require('./error-renderer');
+exports.ErrorRenderer = _validationErrorRenderer.ErrorRenderer;
 
 function configure(frameworkConfig) {
   _breeze2['default'].config.initializeAdapterInstance('modelLibrary', 'backingStore');
@@ -28,9 +32,9 @@ function configure(frameworkConfig) {
 
   frameworkConfig.container.get(_aureliaBinding.ObserverLocator).addAdapter(new _observationAdapter.BreezeObservationAdapter());
 
-  frameworkConfig.container.registerInstance(_errorRenderer.ErrorRenderer, new _errorRenderer.BootstrapErrorRenderer());
+  frameworkConfig.container.registerInstance(_validationErrorRenderer.ErrorRenderer, new _validationBootstrapErrorRenderer.BootstrapErrorRenderer());
 
-  frameworkConfig.globalResources('./breeze-validation');
+  frameworkConfig.globalResources('./validation/breeze-validation');
 
   var adapter = _breeze2['default'].config.initializeAdapterInstance('ajax', 'aurelia', true);
   adapter.setHttpClientFactory(function () {

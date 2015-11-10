@@ -1,34 +1,24 @@
-System.register([], function (_export) {
+System.register(['./error-renderer'], function (_export) {
   'use strict';
 
   var ErrorRenderer, BootstrapErrorRenderer;
 
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+  function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
   return {
-    setters: [],
+    setters: [function (_errorRenderer) {
+      ErrorRenderer = _errorRenderer.ErrorRenderer;
+    }],
     execute: function () {
-      ErrorRenderer = (function () {
-        function ErrorRenderer() {
-          _classCallCheck(this, ErrorRenderer);
-        }
+      BootstrapErrorRenderer = (function (_ErrorRenderer) {
+        _inherits(BootstrapErrorRenderer, _ErrorRenderer);
 
-        ErrorRenderer.prototype.render = function render(rootElement, error, property) {
-          throw new Error('An error renderer must be registered.');
-        };
-
-        ErrorRenderer.prototype.unrender = function unrender(rootElement, error, property) {
-          throw new Error('An error renderer must be registered.');
-        };
-
-        return ErrorRenderer;
-      })();
-
-      _export('ErrorRenderer', ErrorRenderer);
-
-      BootstrapErrorRenderer = (function () {
         function BootstrapErrorRenderer() {
           _classCallCheck(this, BootstrapErrorRenderer);
+
+          _ErrorRenderer.apply(this, arguments);
         }
 
         BootstrapErrorRenderer.prototype.render = function render(rootElement, error, property) {
@@ -91,7 +81,7 @@ System.register([], function (_export) {
         };
 
         return BootstrapErrorRenderer;
-      })();
+      })(ErrorRenderer);
 
       _export('BootstrapErrorRenderer', BootstrapErrorRenderer);
 

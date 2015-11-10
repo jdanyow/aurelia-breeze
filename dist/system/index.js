@@ -1,7 +1,7 @@
-System.register(['aurelia-binding', 'aurelia-http-client', 'breeze', './promise-adapter', './observation-adapter', './ajax-adapter', './error-renderer'], function (_export) {
+System.register(['aurelia-binding', 'aurelia-http-client', 'breeze', './promise-adapter', './validation/error-renderer', './validation/bootstrap-error-renderer', './observation-adapter', './ajax-adapter'], function (_export) {
   'use strict';
 
-  var ObserverLocator, HttpClient, breeze, Q, BreezeObservationAdapter, AjaxAdapter, ErrorRenderer, BootstrapErrorRenderer;
+  var ObserverLocator, HttpClient, breeze, Q, ErrorRenderer, BootstrapErrorRenderer, BreezeObservationAdapter, AjaxAdapter;
 
   _export('configure', configure);
 
@@ -14,7 +14,7 @@ System.register(['aurelia-binding', 'aurelia-http-client', 'breeze', './promise-
 
     frameworkConfig.container.registerInstance(ErrorRenderer, new BootstrapErrorRenderer());
 
-    frameworkConfig.globalResources('./breeze-validation');
+    frameworkConfig.globalResources('./validation/breeze-validation');
 
     var adapter = breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
     adapter.setHttpClientFactory(function () {
@@ -31,13 +31,16 @@ System.register(['aurelia-binding', 'aurelia-http-client', 'breeze', './promise-
       breeze = _breeze['default'];
     }, function (_promiseAdapter) {
       Q = _promiseAdapter.Q;
+    }, function (_validationErrorRenderer) {
+      ErrorRenderer = _validationErrorRenderer.ErrorRenderer;
+
+      _export('ErrorRenderer', _validationErrorRenderer.ErrorRenderer);
+    }, function (_validationBootstrapErrorRenderer) {
+      BootstrapErrorRenderer = _validationBootstrapErrorRenderer.BootstrapErrorRenderer;
     }, function (_observationAdapter) {
       BreezeObservationAdapter = _observationAdapter.BreezeObservationAdapter;
     }, function (_ajaxAdapter) {
       AjaxAdapter = _ajaxAdapter.AjaxAdapter;
-    }, function (_errorRenderer) {
-      ErrorRenderer = _errorRenderer.ErrorRenderer;
-      BootstrapErrorRenderer = _errorRenderer.BootstrapErrorRenderer;
     }],
     execute: function () {}
   };

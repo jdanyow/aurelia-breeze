@@ -1,13 +1,6 @@
-export class ErrorRenderer {
-  render(rootElement, error, property) {
-    throw new Error('An error renderer must be registered.');
-  }
-  unrender(rootElement, error, property) {
-    throw new Error('An error renderer must be registered.');
-  }
-}
+import {ErrorRenderer} from './error-renderer';
 
-export class BootstrapErrorRenderer {
+export class BootstrapErrorRenderer extends ErrorRenderer {
   render(rootElement, error, property) {
     if (property) {
       // add the has-error class to the bootstrap form-group div
