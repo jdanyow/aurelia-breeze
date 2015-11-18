@@ -18,6 +18,7 @@
     "type": "git",
     "url": "http://github.com/jdanyow/aurelia-breeze"
   },
+  "jspmNodeConversion": false,  
   "jspm": {
     "main": "index",
     "format": "amd",
