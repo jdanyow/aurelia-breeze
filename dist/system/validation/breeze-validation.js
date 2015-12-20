@@ -113,13 +113,13 @@ System.register(['aurelia-binding', './expression-analyzer', './error-renderer']
 
           this.validationSubscription = validationEvent.subscribe(this.validationErrorsChanged.bind(this));
           this.boundProperties = this.view.bindings.filter(function (b) {
-            return b.mode === bindingMode.twoWay && _this3.element.contains(b.targetProperty.element);
+            return b.mode === bindingMode.twoWay && _this3.element.contains(b.target);
           }).map(function (b) {
             var property = _this3.analyzer.getBreezeProperty(b.sourceExpression, b.source);
             if (!property || !_this3.isInteresting(property.entity)) {
               return null;
             }
-            property.element = b.targetProperty.element;
+            property.element = b.target;
             return property;
           }).filter(function (p) {
             return p !== null;

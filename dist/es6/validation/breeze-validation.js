@@ -67,13 +67,13 @@ export class BreezeValidationCustomAttribute {
   subscribe(validationEvent) {
     this.validationSubscription = validationEvent.subscribe(::this.validationErrorsChanged);
     this.boundProperties = this.view.bindings
-      .filter(b => b.mode === bindingMode.twoWay && this.element.contains(b.targetProperty.element))  // potentially unsafe...
+      .filter(b => b.mode === bindingMode.twoWay && this.element.contains(b.target))
       .map(b => {
         let property = this.analyzer.getBreezeProperty(b.sourceExpression, b.source);
         if (!property || !this.isInteresting(property.entity)) {
           return null;
         }
-        property.element = b.targetProperty.element;
+        property.element = b.target;
         return property;
       })
       .filter(p => p !== null);
