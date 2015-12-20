@@ -21,7 +21,6 @@ export class HttpResponse {
 export class AjaxAdapter {
   constructor() {
     this.name = 'aurelia';
-    this.defaultHeaders;
     this.requestInterceptor = null;
   }
 
@@ -45,7 +44,7 @@ export class AjaxAdapter {
       error: config.error
     };
     requestInfo.config.request = this.httpClient.createRequest();
-    requestInfo.config.headers = extend(extend({}, this.defaultHeaders), config.headers);
+    requestInfo.config.headers = extend({}, config.headers);
 
     // submit the request-info for interception.
     if (breeze.core.isFunction(this.requestInterceptor)) {
