@@ -36,13 +36,15 @@ module.exports = function(config) {
     'babelPreprocessor': {
       options: {
         sourceMap: 'inline',
-        modules: 'amd',
-        moduleIds: false,
-        loose: "all",
-        stage: 0,
-        optional: []
+        presets: [ 'es2015-loose', 'stage-1'],
+        plugins: [
+          'syntax-flow',
+          'transform-decorators-legacy',
+          'transform-flow-strip-types'
+        ]
       }
     },
+
 
     // test results reporter to use
     // possible values: 'dots', 'progress'

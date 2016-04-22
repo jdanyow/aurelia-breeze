@@ -2,9 +2,6 @@ import {ObserverLocator} from 'aurelia-binding';
 import {HttpClient} from 'aurelia-http-client';
 import breeze from 'breeze';
 import {Q} from './promise-adapter';
-import {ErrorRenderer} from './validation/error-renderer';
-export {ErrorRenderer} from './validation/error-renderer';
-import {BootstrapErrorRenderer} from './validation/bootstrap-error-renderer';
 import {BreezeObservationAdapter} from './observation-adapter';
 import {AjaxAdapter} from './ajax-adapter'; //eslint-disable-line no-unused-vars
 
@@ -17,12 +14,6 @@ export function configure(frameworkConfig) {
 
   // provide aurelia with a way to observe breeze properties.
   frameworkConfig.container.get(ObserverLocator).addAdapter(new BreezeObservationAdapter());
-
-  // default error renderer.
-  frameworkConfig.container.registerInstance(ErrorRenderer, new BootstrapErrorRenderer());
-
-  // breeze-validation attribute.
-  frameworkConfig.globalResources('./validation/breeze-validation');
 
   // provide the ajax adapter with an HttpClient factory...
   // the adapter lazily gets the HttpClient instance to enable scenarios where
