@@ -29,9 +29,6 @@ describe('ajax adapter', function() {
     entityManager = getEntityManager();
     adapter = breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
     adapter.setHttpClientFactory(() => httpClient);
-    adapter.defaultHeaders = {
-      Authorization: 'bearer token'
-    };
     adapter.initialize();
     jasmine.Ajax.install();
   });
@@ -79,7 +76,6 @@ describe('ajax adapter', function() {
       request = jasmine.Ajax.requests.mostRecent();
       expect(request.url).toBe(url + '?a=b&c=d&e=1');
       expect(request.method).toBe(httpMethod);
-      expect(request.requestHeaders['Authorization']).toBe('bearer token');
 
       request.respondWith({
         status: 200,
@@ -131,7 +127,6 @@ describe('ajax adapter', function() {
       expect(request.url).toBe(url);
       expect(request.method).toBe(httpMethod);
       expect(JSON.stringify(request.data())).toEqual(requestData);
-      expect(request.requestHeaders['Authorization']).toBe('bearer token');
       expect(request.requestHeaders['Content-Type']).toBe(contentType);
 
       request.respondWith({
