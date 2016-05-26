@@ -1,15 +1,15 @@
 var _dec, _class;
 
-import breeze from 'breeze';
+import breeze from 'breeze-client';
 import { subscriberCollection, ObserverLocator } from 'aurelia-binding';
-import { HttpClient } from 'aurelia-http-client';
+import { HttpClient } from 'aurelia-fetch-client';
 
 const extend = breeze.core.extend;
 
 export let HttpResponse = class HttpResponse {
   constructor(aureliaResponse, config) {
     this.config = config;
-    this.status = aureliaResponse.statusCode;
+    this.status = aureliaResponse.status;
     this.data = aureliaResponse.content;
     this.headers = aureliaResponse.headers;
   }
@@ -20,6 +20,40 @@ export let HttpResponse = class HttpResponse {
     }
     return this.headers.get(headerName);
   }
+};
+
+function encodeParams(obj) {
+  var query = '';
+  var subValue, innerObj, fullSubName;
+
+  for (var name in obj) {
+    var value = obj[name];
+
+    if (value instanceof Array) {
+      for (var i = 0; i < value.length; ++i) {
+        subValue = value[i];
+        fullSubName = name + '[' + i + ']';
+        innerObj = {};
+        innerObj[fullSubName] = subValue;
+        query += encodeParams(innerObj) + '&';
+      }
+    } else if (value && value.toISOString) {
+      query += encodeURIComponent(name) + '=' + encodeURIComponent(value.toISOString()) + '&';
+    } else if (value instanceof Object) {
+      for (var subName in value) {
+        subValue = value[subName];
+        fullSubName = name + '[' + subName + ']';
+        innerObj = {};
+        innerObj[fullSubName] = subValue;
+        query += encodeParams(innerObj) + '&';
+      }
+    } else if (value === null) {
+      query += encodeURIComponent(name) + '=&';
+    } else if (value !== undefined) {
+      query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
+    }
+  }
+  return query.length ? query.substr(0, query.length - 1) : query;
 };
 
 export let AjaxAdapter = class AjaxAdapter {
@@ -46,7 +80,7 @@ export let AjaxAdapter = class AjaxAdapter {
       success: config.success,
       error: config.error
     };
-    requestInfo.config.request = this.httpClient.createRequest();
+    requestInfo.config.request = this.httpClient;
     requestInfo.config.headers = extend({}, config.headers);
 
     if (breeze.core.isFunction(this.requestInterceptor)) {
@@ -58,32 +92,51 @@ export let AjaxAdapter = class AjaxAdapter {
         return;
       }
     }
+
     config = requestInfo.config;
+    let init = {
+      method: config.type
+    };
 
-    let request = config.request;
-
-    request.withUrl(config.url);
-
-    let method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
-    method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);
-    request[method]();
-
-    request.withParams(config.params);
-
-    if (config.contentType) {
-      request.withHeader('Content-Type', config.contentType);
-    }
+    init.headers = new Headers();
     for (let header in config.headers) {
       if (config.headers.hasOwnProperty(header)) {
-        request.withHeader(header, config.headers[header]);
+        init.headers.append(header, config.headers[header]);
       }
     }
 
     if (config.hasOwnProperty('data')) {
-      request.withContent(config.data);
+      init.body = config.data;
     }
 
-    request.send().then(r => requestInfo.success(new HttpResponse(r, requestInfo.zConfig)), r => requestInfo.error(new HttpResponse(r, requestInfo.zConfig)));
+    if (config.params) {
+      var delim = config.url.indexOf('?') >= 0 ? '&' : '?';
+      config.url = config.url + delim + encodeParams(config.params);
+    }
+
+    if (config.contentType) {
+      init.headers.append('Content-Type', config.contentType);
+    }
+
+    requestInfo.config.request.fetch(config.url, init).then(response => {
+      var responseInput = new HttpResponse(response, requestInfo.zConfig);
+      response.json().then(x => {
+        responseInput.data = x;
+        requestInfo.success(responseInput);
+      }).catch(err => {
+        responseInput.data = err;
+        requestInfo.error(responseInput);
+      });
+    }, response => {
+      var responseInput = new HttpResponse(response, requestInfo.zConfig);
+      response.json().then(x => {
+        responseInput.data = x;
+        requestInfo.error(responseInput);
+      }).catch(err => {
+        responseInput.data = err;
+        requestInfo.error(responseInput);
+      });
+    });
   }
 };
 

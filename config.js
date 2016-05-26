@@ -15,7 +15,7 @@ System.config({
 
   map: {
     "aurelia-binding": "npm:aurelia-binding@1.0.0-beta.1.3.5",
-    "aurelia-http-client": "npm:aurelia-http-client@1.0.0-beta.1.2.1",
+    "aurelia-fetch-client": "npm:aurelia-fetch-client@1.0.0-beta.1.2.5",
     "aurelia-metadata": "npm:aurelia-metadata@1.0.0-beta.1.2.1",
     "aurelia-pal": "npm:aurelia-pal@1.0.0-beta.1.2.2",
     "aurelia-pal-browser": "npm:aurelia-pal-browser@1.0.0-beta.1.2.1",
@@ -63,10 +63,6 @@ System.config({
       "aurelia-logging": "npm:aurelia-logging@1.0.0-beta.1.2.0",
       "aurelia-metadata": "npm:aurelia-metadata@1.0.0-beta.1.2.0",
       "aurelia-pal": "npm:aurelia-pal@1.0.0-beta.1.2.0"
-    },
-    "npm:aurelia-http-client@1.0.0-beta.1.2.1": {
-      "aurelia-pal": "npm:aurelia-pal@1.0.0-beta.1.2.2",
-      "aurelia-path": "npm:aurelia-path@1.0.0-beta.1.2.2"
     },
     "npm:aurelia-loader@1.0.0-beta.1.2.0": {
       "aurelia-metadata": "npm:aurelia-metadata@1.0.0-beta.1.2.0",
@@ -154,8 +150,7 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:process-nextick-args@1.0.6": {
-      "process": "github:jspm/nodelibs-process@0.1.2",
-      "systemjs-json": "github:systemjs/plugin-json@0.1.2"
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:process@0.11.2": {
       "assert": "github:jspm/nodelibs-assert@0.1.0"
