@@ -1,4 +1,4 @@
-define(['exports', 'breeze', 'aurelia-binding', 'aurelia-http-client'], function (exports, _breeze, _aureliaBinding, _aureliaHttpClient) {
+define(['exports', 'breeze-client', 'aurelia-binding', 'aurelia-fetch-client'], function (exports, _breezeClient, _aureliaBinding, _aureliaFetchClient) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -7,7 +7,7 @@ define(['exports', 'breeze', 'aurelia-binding', 'aurelia-http-client'], function
   exports.BreezeObservationAdapter = exports.BreezeObjectObserver = exports.BreezePropertyObserver = exports.Deferred = exports.Q = exports.AjaxAdapter = exports.HttpResponse = undefined;
   exports.configure = configure;
 
-  var _breeze2 = _interopRequireDefault(_breeze);
+  var _breezeClient2 = _interopRequireDefault(_breezeClient);
 
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
@@ -41,14 +41,14 @@ define(['exports', 'breeze', 'aurelia-binding', 'aurelia-http-client'], function
     }
   }
 
-  var extend = _breeze2.default.core.extend;
+  var extend = _breezeClient2.default.core.extend;
 
   var HttpResponse = exports.HttpResponse = function () {
     function HttpResponse(aureliaResponse, config) {
       _classCallCheck(this, HttpResponse);
 
       this.config = config;
-      this.status = aureliaResponse.statusCode;
+      this.status = aureliaResponse.status;
       this.data = aureliaResponse.content;
       this.headers = aureliaResponse.headers;
     }
@@ -62,6 +62,40 @@ define(['exports', 'breeze', 'aurelia-binding', 'aurelia-http-client'], function
 
     return HttpResponse;
   }();
+
+  function encodeParams(obj) {
+    var query = '';
+    var subValue, innerObj, fullSubName;
+
+    for (var name in obj) {
+      var value = obj[name];
+
+      if (value instanceof Array) {
+        for (var i = 0; i < value.length; ++i) {
+          subValue = value[i];
+          fullSubName = name + '[' + i + ']';
+          innerObj = {};
+          innerObj[fullSubName] = subValue;
+          query += encodeParams(innerObj) + '&';
+        }
+      } else if (value && value.toISOString) {
+        query += encodeURIComponent(name) + '=' + encodeURIComponent(value.toISOString()) + '&';
+      } else if (value instanceof Object) {
+        for (var subName in value) {
+          subValue = value[subName];
+          fullSubName = name + '[' + subName + ']';
+          innerObj = {};
+          innerObj[fullSubName] = subValue;
+          query += encodeParams(innerObj) + '&';
+        }
+      } else if (value === null) {
+        query += encodeURIComponent(name) + '=&';
+      } else if (value !== undefined) {
+        query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
+      }
+    }
+    return query.length ? query.substr(0, query.length - 1) : query;
+  };
 
   var AjaxAdapter = exports.AjaxAdapter = function () {
     function AjaxAdapter() {
@@ -85,10 +119,10 @@ define(['exports', 'breeze', 'aurelia-binding', 'aurelia-http-client'], function
         success: config.success,
         error: config.error
       };
-      requestInfo.config.request = this.httpClient.createRequest();
+      requestInfo.config.request = this.httpClient;
       requestInfo.config.headers = extend({}, config.headers);
 
-      if (_breeze2.default.core.isFunction(this.requestInterceptor)) {
+      if (_breezeClient2.default.core.isFunction(this.requestInterceptor)) {
         this.requestInterceptor(requestInfo);
         if (this.requestInterceptor.oneTime) {
           this.requestInterceptor = null;
@@ -97,35 +131,50 @@ define(['exports', 'breeze', 'aurelia-binding', 'aurelia-http-client'], function
           return;
         }
       }
+
       config = requestInfo.config;
+      var init = {
+        method: config.type
+      };
 
-      var request = config.request;
-
-      request.withUrl(config.url);
-
-      var method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
-      method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);
-      request[method]();
-
-      request.withParams(config.params);
-
-      if (config.contentType) {
-        request.withHeader('Content-Type', config.contentType);
-      }
+      init.headers = new Headers();
       for (var header in config.headers) {
         if (config.headers.hasOwnProperty(header)) {
-          request.withHeader(header, config.headers[header]);
+          init.headers.append(header, config.headers[header]);
         }
       }
 
       if (config.hasOwnProperty('data')) {
-        request.withContent(config.data);
+        init.body = config.data;
       }
 
-      request.send().then(function (r) {
-        return requestInfo.success(new HttpResponse(r, requestInfo.zConfig));
-      }, function (r) {
-        return requestInfo.error(new HttpResponse(r, requestInfo.zConfig));
+      if (config.params) {
+        var delim = config.url.indexOf('?') >= 0 ? '&' : '?';
+        config.url = config.url + delim + encodeParams(config.params);
+      }
+
+      if (config.contentType) {
+        init.headers.append('Content-Type', config.contentType);
+      }
+
+      requestInfo.config.request.fetch(config.url, init).then(function (response) {
+        var responseInput = new HttpResponse(response, requestInfo.zConfig);
+        response.json().then(function (x) {
+          responseInput.data = x;
+          requestInfo.success(responseInput);
+        }).catch(function (err) {
+          responseInput.data = err;
+          requestInfo.error(responseInput);
+        });
+      }, function (response) {
+        var responseInput = new HttpResponse(response, requestInfo.zConfig);
+        response.json().then(function (x) {
+          responseInput.data = x;
+          requestInfo.error(responseInput);
+        }).catch(function (err) {
+          responseInput.data = err;
+          requestInfo.error(responseInput);
+        });
       });
     };
 
@@ -139,7 +188,7 @@ define(['exports', 'breeze', 'aurelia-binding', 'aurelia-http-client'], function
     return AjaxAdapter;
   }();
 
-  _breeze2.default.config.registerAdapter('ajax', AjaxAdapter);
+  _breezeClient2.default.config.registerAdapter('ajax', AjaxAdapter);
 
   var Q = exports.Q = function () {
     function Q() {
@@ -311,15 +360,15 @@ define(['exports', 'breeze', 'aurelia-binding', 'aurelia-http-client'], function
   }();
 
   function configure(frameworkConfig) {
-    _breeze2.default.config.initializeAdapterInstance('modelLibrary', 'backingStore');
+    _breezeClient2.default.config.initializeAdapterInstance('modelLibrary', 'backingStore');
 
-    _breeze2.default.config.setQ(Q);
+    _breezeClient2.default.config.setQ(Q);
 
     frameworkConfig.container.get(_aureliaBinding.ObserverLocator).addAdapter(new BreezeObservationAdapter());
 
-    var adapter = _breeze2.default.config.initializeAdapterInstance('ajax', 'aurelia', true);
+    var adapter = _breezeClient2.default.config.initializeAdapterInstance('ajax', 'aurelia', true);
     adapter.setHttpClientFactory(function () {
-      return frameworkConfig.container.get(_aureliaHttpClient.HttpClient);
+      return frameworkConfig.container.get(_aureliaFetchClient.HttpClient);
     });
   }
 });

@@ -1,12 +1,46 @@
 'use strict';
 
-System.register(['breeze', 'aurelia-binding', 'aurelia-http-client'], function (_export, _context) {
+System.register(['breeze-client', 'aurelia-binding', 'aurelia-fetch-client'], function (_export, _context) {
   var breeze, subscriberCollection, ObserverLocator, HttpClient, _dec, _class, _createClass, extend, HttpResponse, AjaxAdapter, Q, Deferred, BreezePropertyObserver, BreezeObjectObserver, BreezeObservationAdapter;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError("Cannot call a class as a function");
     }
+  }
+
+  function encodeParams(obj) {
+    var query = '';
+    var subValue, innerObj, fullSubName;
+
+    for (var name in obj) {
+      var value = obj[name];
+
+      if (value instanceof Array) {
+        for (var i = 0; i < value.length; ++i) {
+          subValue = value[i];
+          fullSubName = name + '[' + i + ']';
+          innerObj = {};
+          innerObj[fullSubName] = subValue;
+          query += encodeParams(innerObj) + '&';
+        }
+      } else if (value && value.toISOString) {
+        query += encodeURIComponent(name) + '=' + encodeURIComponent(value.toISOString()) + '&';
+      } else if (value instanceof Object) {
+        for (var subName in value) {
+          subValue = value[subName];
+          fullSubName = name + '[' + subName + ']';
+          innerObj = {};
+          innerObj[fullSubName] = subValue;
+          query += encodeParams(innerObj) + '&';
+        }
+      } else if (value === null) {
+        query += encodeURIComponent(name) + '=&';
+      } else if (value !== undefined) {
+        query += encodeURIComponent(name) + '=' + encodeURIComponent(value) + '&';
+      }
+    }
+    return query.length ? query.substr(0, query.length - 1) : query;
   }
 
   function handleChange(change) {
@@ -66,13 +100,13 @@ System.register(['breeze', 'aurelia-binding', 'aurelia-http-client'], function (
   }
 
   return {
-    setters: [function (_breeze) {
-      breeze = _breeze.default;
+    setters: [function (_breezeClient) {
+      breeze = _breezeClient.default;
     }, function (_aureliaBinding) {
       subscriberCollection = _aureliaBinding.subscriberCollection;
       ObserverLocator = _aureliaBinding.ObserverLocator;
-    }, function (_aureliaHttpClient) {
-      HttpClient = _aureliaHttpClient.HttpClient;
+    }, function (_aureliaFetchClient) {
+      HttpClient = _aureliaFetchClient.HttpClient;
     }],
     execute: function () {
       _createClass = function () {
@@ -100,7 +134,7 @@ System.register(['breeze', 'aurelia-binding', 'aurelia-http-client'], function (
           _classCallCheck(this, HttpResponse);
 
           this.config = config;
-          this.status = aureliaResponse.statusCode;
+          this.status = aureliaResponse.status;
           this.data = aureliaResponse.content;
           this.headers = aureliaResponse.headers;
         }
@@ -116,6 +150,8 @@ System.register(['breeze', 'aurelia-binding', 'aurelia-http-client'], function (
       }());
 
       _export('HttpResponse', HttpResponse);
+
+      ;
 
       _export('AjaxAdapter', AjaxAdapter = function () {
         function AjaxAdapter() {
@@ -139,7 +175,7 @@ System.register(['breeze', 'aurelia-binding', 'aurelia-http-client'], function (
             success: config.success,
             error: config.error
           };
-          requestInfo.config.request = this.httpClient.createRequest();
+          requestInfo.config.request = this.httpClient;
           requestInfo.config.headers = extend({}, config.headers);
 
           if (breeze.core.isFunction(this.requestInterceptor)) {
@@ -151,35 +187,50 @@ System.register(['breeze', 'aurelia-binding', 'aurelia-http-client'], function (
               return;
             }
           }
+
           config = requestInfo.config;
+          var init = {
+            method: config.type
+          };
 
-          var request = config.request;
-
-          request.withUrl(config.url);
-
-          var method = config.dataType && config.dataType.toLowerCase() === 'jsonp' ? 'jsonp' : config.type.toLowerCase();
-          method = 'as' + method.charAt(0).toUpperCase() + method.slice(1);
-          request[method]();
-
-          request.withParams(config.params);
-
-          if (config.contentType) {
-            request.withHeader('Content-Type', config.contentType);
-          }
+          init.headers = new Headers();
           for (var header in config.headers) {
             if (config.headers.hasOwnProperty(header)) {
-              request.withHeader(header, config.headers[header]);
+              init.headers.append(header, config.headers[header]);
             }
           }
 
           if (config.hasOwnProperty('data')) {
-            request.withContent(config.data);
+            init.body = config.data;
           }
 
-          request.send().then(function (r) {
-            return requestInfo.success(new HttpResponse(r, requestInfo.zConfig));
-          }, function (r) {
-            return requestInfo.error(new HttpResponse(r, requestInfo.zConfig));
+          if (config.params) {
+            var delim = config.url.indexOf('?') >= 0 ? '&' : '?';
+            config.url = config.url + delim + encodeParams(config.params);
+          }
+
+          if (config.contentType) {
+            init.headers.append('Content-Type', config.contentType);
+          }
+
+          requestInfo.config.request.fetch(config.url, init).then(function (response) {
+            var responseInput = new HttpResponse(response, requestInfo.zConfig);
+            response.json().then(function (x) {
+              responseInput.data = x;
+              requestInfo.success(responseInput);
+            }).catch(function (err) {
+              responseInput.data = err;
+              requestInfo.error(responseInput);
+            });
+          }, function (response) {
+            var responseInput = new HttpResponse(response, requestInfo.zConfig);
+            response.json().then(function (x) {
+              responseInput.data = x;
+              requestInfo.error(responseInput);
+            }).catch(function (err) {
+              responseInput.data = err;
+              requestInfo.error(responseInput);
+            });
           });
         };
 

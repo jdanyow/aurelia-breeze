@@ -1,41 +1,29 @@
-import breeze from 'breeze';
+import breeze from 'breeze-client';
 import getEntityManager from './breeze-setup';
-import {HttpClient} from 'aurelia-http-client';
+import {HttpClient} from 'aurelia-fetch-client';
+import 'whatwg-fetch';
+import 'aurelia-polyfills';
 import {initialize} from 'aurelia-pal-browser';
 initialize();
 
-if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
-  var CustomEvent = function(event, params) {
-    var params = params || {
-      bubbles: false,
-      cancelable: false,
-      detail: undefined
-    };
-
-    var evt = document.createEvent("CustomEvent");
-    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-    return evt;
-  };
-
-  CustomEvent.prototype = window.Event.prototype;
-  window.CustomEvent = CustomEvent;
-}
-
 describe('ajax adapter', function() {
   var adapter, entityManager;
+  let originalFetch = window.fetch;
 
-  beforeAll(() => {
+  beforeEach(() => {
+    fetch = window.fetch = jasmine.createSpy('fetch');
+
     var httpClient = new HttpClient();
     entityManager = getEntityManager();
     adapter = breeze.config.initializeAdapterInstance('ajax', 'aurelia', true);
     adapter.setHttpClientFactory(() => httpClient);
     adapter.initialize();
-    jasmine.Ajax.install();
   });
 
-  afterAll(() => {
-    jasmine.Ajax.uninstall();
+  afterEach(() => {
+    fetch = window.fetch = originalFetch;
   });
+
 
   it('can initialize', () => {
     expect(typeof adapter.initialize).toBe('function');
@@ -63,9 +51,14 @@ describe('ajax adapter', function() {
           expect(httpResponse.getHeader).toBeDefined();
           expect(httpResponse.getHeader('rate-limit')).toBe('999');
         },
-        error: httpResponse => {}
-      },
-      request;
+        error: httpResponse => {
+          expect(httpResponse).toBe(null);
+        }
+      };
+
+    let response = createOkResponse(responseData, url);
+    response.headers.append('rate-limit', '999');
+    fetch.and.returnValue(Promise.resolve(response));
 
     spyOn(config, 'success').and.callThrough();
     spyOn(config, 'error').and.callThrough();
@@ -73,18 +66,10 @@ describe('ajax adapter', function() {
     adapter.ajax(config);
 
     setTimeout(() => {
-      request = jasmine.Ajax.requests.mostRecent();
+      let request = fetch.calls.first().args[0];
+
       expect(request.url).toBe(url + '?a=b&c=d&e=1');
       expect(request.method).toBe(httpMethod);
-
-      request.respondWith({
-        status: 200,
-        contentType: contentType,
-        responseText: responseData,
-        responseHeaders: {
-          'rate-limit': '999'
-        }
-      });
 
       setTimeout(() => {
         expect(config.success).toHaveBeenCalled();
@@ -113,9 +98,15 @@ describe('ajax adapter', function() {
           expect(httpResponse.getHeader).toBeDefined();
           expect(httpResponse.getHeader('rate-limit')).toBe('999');
         },
-        error: httpResponse => {}
-      },
-      request;
+        error: httpResponse => {
+          expect(httpResponse).toBe(null);
+        }
+      };
+
+    let response = createOkResponse(responseData, url);
+    response.headers.append('rate-limit', '999');
+    fetch.and.returnValue(Promise.resolve(response));
+
 
     spyOn(config, 'success').and.callThrough();
     spyOn(config, 'error').and.callThrough();
@@ -123,19 +114,13 @@ describe('ajax adapter', function() {
     adapter.ajax(config);
 
     setTimeout(() => {
-      request = jasmine.Ajax.requests.mostRecent();
+      let request = fetch.calls.first().args[0];
+
       expect(request.url).toBe(url);
       expect(request.method).toBe(httpMethod);
-      expect(JSON.stringify(request.data())).toEqual(requestData);
-      expect(request.requestHeaders['Content-Type']).toBe(contentType);
-
-      request.respondWith({
-        status: 200,
-        contentType: contentType,
-        responseText: responseData,
-        responseHeaders: {
-          'rate-limit': '999'
-        }
+      expect(request.headers.get('Content-Type')).toBe(contentType);
+      request.json().then((jsonData) => {
+        expect(JSON.stringify(jsonData)).toEqual(requestData);
       });
 
       setTimeout(() => {
@@ -153,8 +138,8 @@ describe('ajax adapter', function() {
         dataType: 'json',
         success: httpResponse => {},
         error: httpResponse => {}
-      },
-      request;
+      };
+    fetch.and.returnValue(Promise.resolve(createOkResponse('{}', config.url)));
 
     adapter.requestInterceptor =
       requestInfo => {
@@ -166,49 +151,31 @@ describe('ajax adapter', function() {
     adapter.ajax(config);
 
     setTimeout(() => {
-      request = jasmine.Ajax.requests.mostRecent();
+      let request = fetch.calls.first().args[0];
 
       expect(adapter.requestInterceptor).toHaveBeenCalled();
-      expect(request.requestHeaders['intercepted']).toBe('true');
+      expect(request.headers.get('intercepted')).toBe('true');
 
-      request.respondWith({
-        status: 200,
-        responseText: '{}'
-      });
       done();
     }, 50);
   });
-
-  it('handles null responseText', done => {
-    var config = {
-        type: 'GET',
-        url: 'https://foo.com/bars',
-        dataType: 'json',
-        success: httpResponse => {
-          expect(httpResponse.data).toBe(null);
-        },
-        error: httpResponse => {}
-      },
-      request;
-
-    spyOn(config, 'success').and.callThrough();
-    spyOn(config, 'error').and.callThrough();
-
-    adapter.ajax(config);
-
-    setTimeout(() => {
-      request = jasmine.Ajax.requests.mostRecent();
-
-      request.respondWith({
-        status: 200,
-        responseText: 'null'
-      });
-
-      setTimeout(() => {
-        expect(config.success).toHaveBeenCalled();
-        expect(config.error.calls.any()).toBe(false);
-        done();
-      }, 50);
-    }, 50);
-  });
 });
+
+function createOkResponse(responseData, url) {
+  //everything below is from a normal fetch response
+  return new Response(responseData,
+    {
+      bodyUsed: false,
+      headers: new Headers({
+        'pragma': 'no-cache',
+        'content-type': 'application/json; charset=utf-8',
+        'cache-control': 'no-cache',
+        'expires': -1,
+      }),
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      type: 'basic',
+      url: url
+    });
+}

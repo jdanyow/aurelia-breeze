@@ -5,7 +5,7 @@ This library is a plugin for the [Aurelia](http://www.aurelia.io/) framework.  I
 What's included:
 
 1. An adapter for observing Breeze entities.
-2. A Breeze [ajax adapter](http://www.getbreezenow.com/documentation/controlling-ajax) that uses Aurelia's [http-client](https://github.com/aurelia/http-client).
+2. A Breeze [ajax adapter](http://www.getbreezenow.com/documentation/controlling-ajax) that uses Aurelia's [fetch-client](https://github.com/aurelia/fetch-client).
 3. A [light-weight substitute](https://github.com/jdanyow/aurelia-breeze/blob/master/src/promise-adapter.js) for Breeze's dependency on [Q](https://github.com/kriskowal/q) that uses [ES6 promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
 4. Automatic form validation for Breeze entities.  Info [here](http://www.danyow.net/form-validation-with-breeze-and-aurelia/).
 
@@ -25,7 +25,7 @@ breeze.config.initializeAdapterInstance("modelLibrary", "backingStore", true);
 
 **Do I need jQuery?**
 
-No.  Breeze doesn't force you to use a particular ajax implementation.  By default it uses jQuery however it can be configured to use Angular's $http or even a custom ajax adapter.  This is where we come in... this plugin provides Breeze with an ajax implementation that uses Aurelia's http-client.
+No.  Breeze doesn't force you to use a particular ajax implementation.  By default it uses jQuery however it can be configured to use Angular's $http or even a custom ajax adapter.  This is where we come in... this plugin provides Breeze with an ajax implementation that uses Aurelia's fetch-client.
 
 **Do I need Q?**
 
@@ -73,7 +73,7 @@ This guide uses [jspm](http://jspm.io/) and assumes you've already setup your Au
 
 * [aurelia-binding](https://github.com/aurelia/binding)
 * [aurelia-dependency-injection](https://github.com/aurelia/dependency-injection)
-* [aurelia-http-client](https://github.com/aurelia/http-client)
+* [aurelia-fetch-client](https://github.com/aurelia/fetch-client)
 * [breeze](http://www.getbreezenow.com/breezejs)
 
 ## Platform Support
