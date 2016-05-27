@@ -1,5 +1,5 @@
 import {BreezeObservationAdapter} from '../src/observation-adapter';
-import breeze from 'breeze';
+import breeze from 'breeze-client';
 import getEntityManager from './breeze-setup';
 
 describe('breeze observation adapter', function() {

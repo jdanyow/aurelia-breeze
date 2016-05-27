@@ -1,8 +1,6 @@
 'use strict';
 
 System.register(['breeze-client', 'aurelia-binding', 'aurelia-fetch-client'], function (_export, _context) {
-  "use strict";
-
   var breeze, subscriberCollection, ObserverLocator, HttpClient, _dec, _class, _createClass, extend, HttpResponse, AjaxAdapter, Q, Deferred, BreezePropertyObserver, BreezeObjectObserver, BreezeObservationAdapter;
 
   function _classCallCheck(instance, Constructor) {

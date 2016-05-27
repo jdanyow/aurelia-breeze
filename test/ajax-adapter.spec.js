@@ -1,26 +1,10 @@
-import breeze from 'breeze';
+import breeze from 'breeze-client';
 import getEntityManager from './breeze-setup';
 import {HttpClient} from 'aurelia-fetch-client';
+import 'whatwg-fetch';
+import 'aurelia-polyfills';
 import {initialize} from 'aurelia-pal-browser';
 initialize();
-
-//Why was this here?
-// if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
-//   var CustomEvent = function(event, params) {
-//     var params = params || {
-//       bubbles: false,
-//       cancelable: false,
-//       detail: undefined
-//     };
-//
-//     var evt = document.createEvent("CustomEvent");
-//     evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-//     return evt;
-//   };
-//
-//   CustomEvent.prototype = window.Event.prototype;
-//   window.CustomEvent = CustomEvent;
-// }
 
 describe('ajax adapter', function() {
   var adapter, entityManager;
@@ -175,39 +159,6 @@ describe('ajax adapter', function() {
       done();
     }, 50);
   });
-
-  //When would a null response ever be a valid?
-  //Breeze returns a response with a type even when an empty dataset is returned.
-  // it('handles null response', done => {
-  //   var config = {
-  //       type: 'GET',
-  //       url: 'https://foo.com/bars',
-  //       dataType: 'json',
-  //       success: httpResponse => {
-  //         expect(httpResponse.data).toBe(null);
-  //       },
-  //       error: httpResponse => {
-  //         expect(httpResponse).toBe(null);
-  //       }
-  //     };
-  //
-  //     fetch.and.returnValue(Promise.resolve(createOkResponse(null, config.url)));
-  //
-  //   spyOn(config, 'success').and.callThrough();
-  //   spyOn(config, 'error').and.callThrough();
-  //
-  //   adapter.ajax(config);
-  //
-  //   setTimeout(() => {
-  //     let request = fetch.calls.first().args[0];
-  //
-  //     setTimeout(() => {
-  //       expect(config.success).toHaveBeenCalled();
-  //       expect(config.error.calls.any()).toBe(false);
-  //       done();
-  //     }, 50);
-  //   }, 50);
-  // });
 });
 
 function createOkResponse(responseData, url) {
