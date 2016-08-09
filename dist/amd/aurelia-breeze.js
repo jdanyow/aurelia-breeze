@@ -268,6 +268,7 @@ define(['exports', 'breeze-client', 'aurelia-binding', 'aurelia-fetch-client'], 
           handleChange(change);
         }
       }
+      change.propertyName = null;
       return;
     }
 

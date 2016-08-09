@@ -53,6 +53,7 @@ System.register(['breeze-client', 'aurelia-binding', 'aurelia-fetch-client'], fu
           handleChange(change);
         }
       }
+      change.propertyName = null;
       return;
     }
 

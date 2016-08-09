@@ -254,6 +254,7 @@ function handleChange(change) {
         handleChange(change);
       }
     }
+    change.propertyName = null;
     return;
   }
 
