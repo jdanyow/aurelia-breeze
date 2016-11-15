@@ -40,13 +40,13 @@ define(['exports', 'breeze-client', 'aurelia-binding', 'aurelia-fetch-client'], 
   var extend = _breezeClient2.default.core.extend;
 
   var HttpResponse = exports.HttpResponse = function () {
-    function HttpResponse(aureliaResponse, config) {
+    function HttpResponse(status, data, headers, config) {
       
 
       this.config = config;
-      this.status = aureliaResponse.status;
-      this.data = aureliaResponse.content;
-      this.headers = aureliaResponse.headers;
+      this.status = status;
+      this.data = data;
+      this.headers = headers;
     }
 
     HttpResponse.prototype.getHeader = function getHeader(headerName) {
@@ -158,26 +158,17 @@ define(['exports', 'breeze-client', 'aurelia-binding', 'aurelia-fetch-client'], 
       }
 
       requestInfo.config.request.fetch(config.url, init).then(function (response) {
-        var responseInput = new HttpResponse(response, requestInfo.zConfig);
-        response.json().then(function (x) {
-          responseInput.data = x;
-          requestInfo.success(responseInput);
-        }).catch(function (err) {
-          responseInput.data = err;
-          requestInfo.error(responseInput);
+        response.json().then(function (data) {
+          var breezeResponse = new HttpResponse(response.status, data, response.headers, requestInfo.zConfig);
+
+          if (response.ok) {
+            requestInfo.success(breezeResponse);
+          } else {
+            requestInfo.error(breezeResponse);
+          }
         });
-      }, function (response) {
-        var responseInput = new HttpResponse(response, requestInfo.zConfig);
-        if (!response.json) {
-          responseInput.error = response;requestInfo.error(responseInput);return;
-        }
-        response.json().then(function (x) {
-          responseInput.data = x;
-          requestInfo.error(responseInput);
-        }).catch(function (err) {
-          responseInput.data = err;
-          requestInfo.error(responseInput);
-        });
+      }).catch(function (error) {
+        return requestInfo.error(error);
       });
     };
 

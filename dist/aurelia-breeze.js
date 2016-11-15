@@ -5,11 +5,11 @@ import {HttpClient} from 'aurelia-fetch-client';
 const extend = breeze.core.extend;
 
 export class HttpResponse {
-  constructor(aureliaResponse, config) {
+  constructor(status, data, headers, config) {
     this.config = config;
-    this.status = aureliaResponse.status;
-    this.data = aureliaResponse.content;
-    this.headers = aureliaResponse.headers;
+    this.status = status;
+    this.data = data;
+    this.headers = headers;
   }
 
   getHeader(headerName) {
@@ -127,38 +127,24 @@ export class AjaxAdapter {
       init.headers.append('Content-Type', config.contentType);
     }
 
-    // send the request.
-    //let request = new Request(config.url, init);
-    //requestInfo.config.request.fetch(request)
-    // preassembling fetch like this breaks passing withDefaults({credentials: ...
-    // Credentials is used for handling CORS.
-
     requestInfo.config.request.fetch(config.url, init)
       .then(response => {
-        var responseInput = new HttpResponse(response, requestInfo.zConfig);
         response.json()
-          .then(x => {
-            responseInput.data = x;
-            requestInfo.success(responseInput);
-          })
-          .catch((err) => {
-            responseInput.data = err;
-            requestInfo.error(responseInput)
+          .then(data => {
+            const breezeResponse = new HttpResponse(
+              response.status,
+              data,
+              response.headers,
+              requestInfo.zConfig);
+
+            if (response.ok) {
+              requestInfo.success(breezeResponse);
+            } else {
+              requestInfo.error(breezeResponse);
+            }
           });
-      },
-      response => {
-        var responseInput = new HttpResponse(response, requestInfo.zConfig);
-        if (!response.json) { responseInput.error = response; requestInfo.error(responseInput); return; }
-        response.json()
-          .then(x => {
-            responseInput.data = x;
-            requestInfo.error(responseInput);
-          })
-          .catch(err => {
-            responseInput.data = err;
-            requestInfo.error(responseInput)
-          });
-      });
+      })
+      .catch(error => requestInfo.error(error));
   }
 }
 

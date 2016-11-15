@@ -5,7 +5,7 @@ define(['exports', './aurelia-breeze'], function (exports, _aureliaBreeze) {
     value: true
   });
   Object.keys(_aureliaBreeze).forEach(function (key) {
-    if (key === "default") return;
+    if (key === "default" || key === "__esModule") return;
     Object.defineProperty(exports, key, {
       enumerable: true,
       get: function () {

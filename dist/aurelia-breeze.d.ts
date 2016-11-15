@@ -7,7 +7,7 @@ import {
   HttpClient
 } from 'aurelia-fetch-client';
 export declare class HttpResponse {
-  constructor(aureliaResponse?: any, config?: any);
+  constructor(status?: any, data?: any, headers?: any, config?: any);
   getHeader(headerName?: any): any;
   getHeaders(headerName?: any): any;
 }

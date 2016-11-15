@@ -8,7 +8,7 @@ System.register(['./aurelia-breeze'], function (_export, _context) {
       var _exportObj = {};
 
       for (var _key in _aureliaBreeze) {
-        if (_key !== "default") _exportObj[_key] = _aureliaBreeze[_key];
+        if (_key !== "default" && _key !== "__esModule") _exportObj[_key] = _aureliaBreeze[_key];
       }
 
       _export(_exportObj);
